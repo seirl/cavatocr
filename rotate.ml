@@ -12,4 +12,7 @@ let rotate_polar (r,t) angle =
 let rotate (x,y) angle =
     polar_to_cartesian (rotate_polar (cartesian_to_polar (x,y)) angle)
 
-(*let rotate angle = function*)
+let newdims w h angle =
+    let wx, wy = rotate (w,0) angle and
+    let hx, hy = rotate (0,h) angle in
+    (max wx hx, max wy hy 
