@@ -22,14 +22,14 @@ let newdims w h angle =
 let rotate_matrix src angle =
     let (ow, oh) = (Matrix.nbcols src, Matrix.nbrows src) in
     let (nw, nh) = newdims ow oh angle in
-    let dst = Matrix.make nw nh 0 in
+    let dst = Matrix.make nw nh False in
     begin
         for r = 0 to ow - 1 do
             for c = 0 to oh - 1 do
-                let (x, y) = (c, oh - r - 1) in
+                let (x, y) = Matrix.coords (c,r) oh in
                 let (nx, ny) = rotate (x, y) angle in
-                let (nc, nr) = (nh - ny - 1, nx) in
-                dst.(nc).(nr) <- src.(r).(c)
+                let (nc, nr) = Matrix.pos (nx, ny) nh in
+                dst.(nr).(nc) <- src.(r).(c)
             done
         done;
     dst
