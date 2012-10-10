@@ -1,5 +1,3 @@
-open Matrix
-
 let bool2color = function
     | true -> Sdlvideo.black
     | false -> Sdlvideo.white

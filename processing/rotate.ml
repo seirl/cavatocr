@@ -1,5 +1,3 @@
-open Matrix
-
 let cartesian_to_polar (x,y) = 
     let (x,y) = (float x, float y) in
     (sqrt (x**2. +. y**2.), atan2 y x)
@@ -22,7 +20,7 @@ let newdims w h angle =
 let rotate_matrix src angle =
     let (ow, oh) = (Matrix.nbcols src, Matrix.nbrows src) in
     let (nw, nh) = newdims ow oh angle in
-    let dst = Matrix.make nw nh False in
+    let dst = Matrix.make nw nh false in
     begin
         for r = 0 to ow - 1 do
             for c = 0 to oh - 1 do
