@@ -1,58 +1,30 @@
-let pi = 3.14159265
+let pi = 3.14159
 
-let cartesian_to_polar (x,y) = 
-    let (x,y) = (float x, float y) in
-    (sqrt (x**2. +. y**2.), atan2 y x)
+let rotate img angle =
+    let (cos_a, sin_a) = (cos angle, sin angle) in
+    let (w, h) = Image.get_dims img in
+    let wo = int_of_float (float w *. (abs_float cos_a)
+        +. float h *. (abs_float sin_a)) in
+    let ho = int_of_float (float h *. (abs_float cos_a)
+        +. float w *. (abs_float sin_a)) in
+    let img2 = Sdlvideo.create_RGB_surface_format img [] wo ho in
+    let (x_center, y_center) = (w/2, h/2) in
+    let (xo_center, yo_center) = (wo/2, ho/2) in
+    for y=0 to ho - 1 do
+        for x = 0 to wo - 1 do
+            let xo = int_of_float (cos_a *. float (x - xo_center)
+                +. sin_a *. float (y - yo_center) +. float x_center) in
+            let yo = int_of_float (-.sin_a *. float (x - xo_center)
+                +. cos_a *. float (y - yo_center) +. float y_center) in
+            if xo >= 0 && xo < w && yo >=0 && yo < h
+            && x >= 0 && x < wo && y >=0 && y < ho
+            then
+                let px = Sdlvideo.get_pixel_color img xo yo in
+                Printf.printf "%d %d %d %d " xo yo x y;
+                Printf.printf "set ";
+                Sdlvideo.put_pixel_color img2 x y px;
+                Printf.printf "done\n";
+        done
+    done;
+    img2
 
-let polar_to_cartesian (r,t) =
-    let (x,y) = (r *. cos t, r *. sin t) in
-    (int_of_float x, int_of_float y + 1)
-
-let rotate_polar (r,t) angle =
-    (r, t +. angle)
-
-let rotate (x,y) angle =
-    polar_to_cartesian (rotate_polar (cartesian_to_polar (x,y)) angle)
-
-let newdims w h angle =
-    let wx, wy = rotate (w,0) angle in
-    let hx, hy = rotate (0,h) angle in
-    ((max (abs wx) (abs hx)) + 2, (max (abs wy) (abs hy)) + 2)
-
-let print_matrix mat =
-    for r = 0 to Matrix.nbrows mat - 1 do
-        for c = 0 to Matrix.nbcols mat - 1 do
-            Printf.printf "%B " mat.(r).(c);
-        done;
-        Printf.printf "\n";
-    done
-
-let rotate_matrix src angle =
-    let (ow, oh) = (Matrix.nbcols src, Matrix.nbrows src) in
-    let (nw, nh) = newdims ow oh angle in
-    let dst = Matrix.make nw nh false in
-    begin
-        for r = 0 to ow - 1 do
-            for c = 0 to oh - 1 do
-                let (x, y) = Matrix.coords (c,r) oh in
-                let (x, y) = (x - ow / 2, y - oh / 2) in
-                let (nx, ny) = rotate (x, y) angle in
-                let (nc, nr) = Matrix.pos (nx + nw / 2, ny + nh / 2) nh in
-                Printf.printf "%d %d\n" r c;
-                Printf.printf "%d %d\n" nr nc;
-                print_matrix dst;
-                dst.(nr).(nc) <- src.(r).(c)
-            done
-        done;
-    dst
-    end
-
-let _ =
-    let mat = [| [| false ; false ; true |];
-        [| true ; false ; true |];
-        [| false ; false ; true |];
-        [| false ; true ; true |];
-    |] in 
-    print_matrix (rotate_matrix mat (pi *. 2.));
-    let x,y = rotate (5,5) (pi *. 2.) in
-    Printf.printf "%d %d" x y
