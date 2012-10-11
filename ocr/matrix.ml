@@ -1,8 +1,7 @@
 let nbrows = Array.length
 let nbcols x = Array.length x.(0)
+let get_dims m = (nbrows m, nbcols m)
 let make = Array.make_matrix
-let coords (c,r) h = (c, h - r - 1)
-let pos (x,y) h = (h - y - 1, x)
 let int_of_bool (b: bool) = if b then 1 else 0;;
 
 let print_matrix mat =
