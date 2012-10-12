@@ -6,6 +6,7 @@ import requests
 import yaml
 import threading
 import time
+import logging
 
 def load_conf():
     return yaml.load(codecs.open('conf.yml', 'r', 'utf-8'))
@@ -35,11 +36,23 @@ def paste(text, hl='', ln=False, raw=False, comment='', user=''):
     r = urllib.request.urlopen(urllib.request.Request(url, data))
     return r.url
 
-def get_lasts_commits():
+class Checker():
+    def __init__(self, bot):
+        self.bot = bot
+    
+ def get_last_commits():
     url = 'https://api.bitbucket.org/1.0/repositories/{}/{}/changesets'
     url = url.format(CONF['bitbucket']['user'], CONF['bitbucket']['repo'])
     js = requests.get(url).text
-    last_commits = json.loads(js)
+    return json.loads(js)
+
+   def run(self):
+       lc = get_last_commits[0]
+       if lc['node'] == self.bot.last_commit['node']:
+           return
+       self.bot.last_commit = lc
+       self.bot.message(rdc('commit').format(node, author, branch, message))
+
 
 class PeriodicalCall(threading.Thread):
     def __init__(self, delay, cls):
@@ -56,16 +69,17 @@ class PeriodicalCall(threading.Thread):
 
 class Bot(IRC):
     def __init__(self):
-        IRC.__init__(self, loggingEnabled=False)
+        IRC.__init__(self)
         self.channel = CONF['irc']['channel']
         self.channel_key = CONF['irc']['key']
-        self.ready = False
+        self.last_commit = None
         self.lastposts = {}
 
     def on_ready(self):
         self.join(self.channel, self.channel_key)
         self.message(self.channel, rdc('hello'))
         self.ready = True
+        self.last
 
     def on_channel_message(self, umask, channel, msg):
         msg = Tags.strip(msg)
@@ -77,12 +91,14 @@ class Bot(IRC):
             args = splitted[1:]
  
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG)
+    
     bot = Bot()
     bot.connect(CONF['irc']['host'], CONF['irc']['port'])
     bot.ident(CONF['irc']['nick'])
 
     checker = Checker(bot)
-    call = PeriodicalCall(CONF['forum']['checkdelay'], checker)
+    call = PeriodicalCall(CONF['bitbucket']['checkdelay'], checker)
     call.daemon = True
     call.start()
    
