@@ -7,6 +7,7 @@ import yaml
 import threading
 import time
 import logging
+import json
 
 def load_conf():
     return yaml.load(open('conf.yml'))
@@ -40,18 +41,26 @@ class Checker():
     def __init__(self, bot):
         self.bot = bot
 
-    def get_last_commits():
+    def get_last_commits(self):
         url = 'https://api.bitbucket.org/1.0/repositories/{}/{}/changesets'
         url = url.format(CONF['bitbucket']['user'], CONF['bitbucket']['repo'])
         js = requests.get(url).text
         return json.loads(js)
 
     def run(self):
-       lc = self.get_last_commits[0]
-       if lc['node'] == self.bot.last_commit['node']:
-           return
-       self.bot.last_commit = lc
-       self.bot.message(rdc('commit').format(node, author, branch, message))
+        lc = self.get_last_commits()['changesets'][0]
+        logging.debug(lc)
+        if (not self.bot.last_commit or 
+            lc['node'] == self.bot.last_commit['node']):
+            return
+        self.bot.last_commit = lc
+        params = {
+            'node': Tags.Red(node),
+            'author': Tags.Green(author),
+            'branch': Tags.Blue(branch),
+            'message': message,
+        }
+        self.bot.message(rdc('commit').format(node, author, branch, message))
 
 class PeriodicalCall(threading.Thread):
     def __init__(self, delay, cls):
