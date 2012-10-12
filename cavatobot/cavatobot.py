@@ -52,10 +52,10 @@ class Checker():
         nb_commits = last_commits['limit']
         lc = self.get_last_commits()['changesets'][nb_commits - 1]
         logging.debug(lc)
+        self.bot.last_commit = lc
         if (not self.bot.last_commit or 
             lc['node'] == self.bot.last_commit['node']):
             return
-        self.bot.last_commit = lc
         params = {
             'node': Tags.Red(node),
             'author': Tags.Green(author),
