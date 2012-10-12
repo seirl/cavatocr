@@ -64,7 +64,7 @@ class Checker():
             'branch': Tags.Blue(lc['branch']),
             'message': lc['message'],
         }
-        self.bot.message(rdc('commit').format(node, author, branch, message))
+        self.bot.message(rdc('commit').format(params))
 
 class PeriodicalCall(threading.Thread):
     def __init__(self, delay, cls):
