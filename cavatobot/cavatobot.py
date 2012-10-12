@@ -48,7 +48,9 @@ class Checker():
         return json.loads(js)
 
     def run(self):
-        lc = self.get_last_commits()['changesets'][0]
+        last_commits = self.get_last_commits()
+        nb_commits = last_commits['count']
+        lc = self.get_last_commits()['changesets'][nb_commits - 1]
         logging.debug(lc)
         if (not self.bot.last_commit or 
             lc['node'] == self.bot.last_commit['node']):
