@@ -2,3 +2,5 @@ syntax: glob
 _build
 *.swp
 *.native
+__pycache__
+*.pyc
