@@ -59,10 +59,10 @@ class Checker():
             return
         self.bot.last_commit = lc
         params = {
-            'node': Tags.Red(node),
-            'author': Tags.Green(author),
-            'branch': Tags.Blue(branch),
-            'message': message,
+            'node': Tags.Red(lc['node']),
+            'author': Tags.Green(lc['author']),
+            'branch': Tags.Blue(lc['branch']),
+            'message': lc['message'],
         }
         self.bot.message(rdc('commit').format(node, author, branch, message))
 
