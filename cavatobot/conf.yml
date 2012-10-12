@@ -1,0 +1,18 @@
+irc:
+    channel: '#cavatocr'
+    key: 
+    host: irc.rezosup.org
+    port: 6667
+    nick: Cavatobot
+msg:
+    hello:
+        - ser la fet isie
+        - ohai o/
+        - slt sava isie
+        - wesh les zamis
+    commit:
+        - "[{branch}] r{node} − {author}: « {message} »"
+bitbucket:
+    user: serialk
+    repo: cavatocr
+    checkdelay: 15
