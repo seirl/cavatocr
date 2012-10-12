@@ -51,7 +51,6 @@ class Checker():
         last_commits = self.get_last_commits()
         nb_commits = last_commits['limit']
         lc = self.get_last_commits()['changesets'][nb_commits - 1]
-        logging.debug(lc)
         if not self.bot.last_commit:
             self.bot.last_commit = lc
             return
