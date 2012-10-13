@@ -41,29 +41,36 @@ class Checker():
     def __init__(self, bot):
         self.bot = bot
 
-    def get_last_commits(self):
+    def get_last_commits(self, user, repo):
         url = 'https://api.bitbucket.org/1.0/repositories/{}/{}/changesets'
-        url = url.format(CONF['bitbucket']['user'], CONF['bitbucket']['repo'])
+        url = url.format(user, repo)
         js = requests.get(url).text
         return json.loads(js)
-
+    
     def run(self):
-        last_commits = self.get_last_commits()
+        if not self.bot.ready:
+            return
+        for repo in CONF['repos']:
+            r = CONF['repos'][repo]
+            self.check_last(repo, r['user'], r['repo'], r['channel'])
+
+    def check_last(self, rid, user, repo, channel):
+        last_commits = self.get_last_commits(user, repo)
         nb_commits = last_commits['limit']
-        lc = self.get_last_commits()['changesets'][nb_commits - 1]
-        if not self.bot.last_commit:
-            self.bot.last_commit = lc
+        lc = self.get_last_commits(user, repo)['changesets'][nb_commits - 1]
+        if not rid in self.bot.last_commits:
+            self.bot.last_commits[rid] = lc
             return
-        if lc['node'] == self.bot.last_commit['node']:
+        if lc['node'] == self.bot.last_commits[rid]['node']:
             return
-        self.bot.last_commit = lc
+        self.bot.last_commits[rid] = lc
         params = {
             'node': Tags.Red(lc['node']),
             'author': Tags.Green(lc['author']),
             'branch': Tags.Blue(lc['branch']),
             'message': lc['message'],
         }
-        self.bot.message(self.bot.channel, rdc('commit').format(**params))
+        self.bot.message(channel, rdc('commit').format(**params))
 
 class PeriodicalCall(threading.Thread):
     def __init__(self, delay, cls):
@@ -81,14 +88,15 @@ class PeriodicalCall(threading.Thread):
 class Bot(IRC):
     def __init__(self):
         IRC.__init__(self)
-        self.channel = CONF['irc']['channel']
-        self.channel_key = CONF['irc']['key']
-        self.last_commit = None
-        self.lastposts = {}
+        self.last_commits = {}
+        self.ready = False
 
     def on_ready(self):
-        self.join(self.channel, self.channel_key)
-        self.message(self.channel, rdc('hello'))
+        for repo in CONF['repos']:
+            r = CONF['repos'][repo]
+            print(r)
+            self.join(r['channel'], r['channel_key'])
+            self.message(r['channel'], rdc('hello'))
         self.ready = True
 
     def on_channel_message(self, umask, channel, msg):
