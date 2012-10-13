@@ -9,7 +9,7 @@ msg:
         - slt sava isie
         - wesh les zamis
     commit:
-        - "[{branch}] r{node} − {author}: « {message} »"
+        - "[{branch}] r{node} − {author}: « {message} » ({url})"
 
 bitbucket:
     checkdelay: 15

@@ -64,11 +64,14 @@ class Checker():
         if lc['node'] == self.bot.last_commits[rid]['node']:
             return
         self.bot.last_commits[rid] = lc
+        url = 'https://bitbucket.org/{}/{}/changeset/{}'.format(
+                user, repo, lc['raw_node')
         params = {
             'node': Tags.Red(lc['node']),
             'author': Tags.Green(lc['author']),
             'branch': Tags.Blue(lc['branch']),
             'message': lc['message'].strip(),
+            'url': shortenurl(url)
         }
         self.bot.message(channel, rdc('commit').format(**params))
 
