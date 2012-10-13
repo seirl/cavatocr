@@ -18,8 +18,8 @@ def rdc(msg):
     return random.choice(CONF['msg'][msg])
 
 def shortenurl(url):
-    url = 'http://ln-s.net/home/api.jsp?url=' + urllib.parse.quote(url)
-    r = urllib.request.urlopen(url).read().decode('utf-8')
+    url = 'http://ln-s.net/home/api.jsp?url={}'.format(url)
+    r = requests.get(url).text
     return r.split()[1]
 
 def paste(text, hl='', ln=False, raw=False, comment='', user=''):
