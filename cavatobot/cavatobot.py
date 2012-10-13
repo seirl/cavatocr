@@ -68,7 +68,7 @@ class Checker():
             'node': Tags.Red(lc['node']),
             'author': Tags.Green(lc['author']),
             'branch': Tags.Blue(lc['branch']),
-            'message': lc['message'],
+            'message': lc['message'].strip(),
         }
         self.bot.message(channel, rdc('commit').format(**params))
 

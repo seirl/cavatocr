@@ -20,8 +20,4 @@ repos:
         channel_key: 
         user: serialk
         repo: cavatocr
-    mylittlecluster:
-        channel: '#mylittlecluster'
-        channel_key: 
-        user: serialk
-        repo: mylittlecluster
+
