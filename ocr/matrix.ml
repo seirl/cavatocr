@@ -2,7 +2,7 @@ let nbrows = Array.length
 let nbcols x = Array.length x.(0)
 let get_dims m = (nbrows m, nbcols m)
 let make = Array.make_matrix
-let int_of_bool (b: bool) = if b then 1 else 0;;
+let int_of_bool (b: bool) = if b then 1 else 0
 
 let print_matrix mat =
     for r = 0 to (nbrows mat) - 1 do
