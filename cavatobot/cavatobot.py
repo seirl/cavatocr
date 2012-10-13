@@ -101,8 +101,6 @@ class Bot(IRC):
 
     def on_channel_message(self, umask, channel, msg):
         msg = Tags.strip(msg)
-        if channel != self.channel:
-            return
         if msg[0] == '!':
             splitted = msg.split()
             command = splitted[0]
