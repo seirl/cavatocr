@@ -16,10 +16,16 @@ let matrix_to_surface matrix =
     begin
         for c = 0 to w - 1 do
             for r = 0 to h - 1 do
-                let (x,y) = Matrix.coords (c,r) h in
+                let (x,y) = (c,r) in
                 Sdlvideo.put_pixel_color surface x y (bool2color matrix.(r).(c))
             done
         done;
         surface
     end
+
+let surface_to_matrix surface =
+    
+
+
+    
 

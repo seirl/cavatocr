@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[CavatOCR]]></title>
+  <link href="http://cavatocr.serialk.fr/atom.xml" rel="self"/>
+  <link href="http://cavatocr.serialk.fr/"/>
+  <updated>2012-10-15T22:09:39+02:00</updated>
+  <id>http://cavatocr.serialk.fr/</id>
+  <author>
+    <name><![CDATA[Antoine Pietri, Paul Hervot, Stéphane Lefebvre and Thomas Kostas]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+</feed>
