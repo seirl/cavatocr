@@ -1,6 +1,5 @@
 let pi = 3.14159
 
-
 let rotate mat angle =
     let (cos_a, sin_a) = (cos angle, sin angle) in
     let (w, h) = Matrix.get_dims mat in
@@ -31,6 +30,11 @@ let to_degrees = function rad -> (rad *. 180.) /. pi
 let to_radians = function deg -> (deg *. pi) /. 180.
 
 
+let histogram mat angle =
+    let (w,h) = Matrix.get_dims mat in
+    angle
+
+
 let get_skew_angle mat =
     let hist_opt = ref 0.
     and angle_opt = ref 0. in
@@ -48,8 +52,10 @@ let get_skew_angle mat =
         let angle = (float i) /. 10. in
         let hist = histogram mat (to_radians angle) in
         if hist > !hist_opt then
-            hist_opt := hist;
-            angle_opt := angle;
+            begin
+                hist_opt := hist;
+                angle_opt := angle;
+            end
     done;
     (to_radians !angle_opt)
     
