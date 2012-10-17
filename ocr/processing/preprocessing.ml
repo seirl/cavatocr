@@ -75,8 +75,23 @@ let binarise imageBw imageBin tolerance =
      done
 
     (* suppression de bruit *) 
+let sorttable arraytable =  
+        for i=0 to Array.lenght arraytable-1 do
+        let minplace = ref i
+        and temp = arraytable.(i) in
+           for j=i to Array.lenght arraytable-1 do
+                   if arraytable.(j) < arraytable.(minplace) then  
+                     minplace := j
+           done ;
+           arraytable.(i) <- arraytable.(j) ;
+           arraytable.(j) <- temp
+        done
 
-(*let rec mathmedian l*) 
+
+
+let rec mathmedian l lenght = match l with
+|e::l when lenght = 5 -> e 
+|_::l -> mathmedian l (lenght-1)
 (* main *)
 let main () =
   begin
