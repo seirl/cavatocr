@@ -55,7 +55,10 @@ class Checker():
             self.check_last(repo, r['user'], r['repo'], r['channel'])
 
     def check_last(self, rid, user, repo, channel):
-        last_commits = self.get_last_commits(user, repo)
+        try:
+            last_commits = self.get_last_commits(user, repo)
+        except:
+            return
         nb_commits = last_commits['limit']
         lc = self.get_last_commits(user, repo)['changesets'][nb_commits - 1]
         if not rid in self.bot.last_commits:
@@ -110,7 +113,7 @@ class Bot(IRC):
             args = splitted[1:]
  
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARNING)
     
     bot = Bot()
     bot.connect(CONF['irc']['host'], CONF['irc']['port'])
