@@ -1,11 +1,15 @@
+OCAML = ocamlbuild
+LIBS = sdlloader
+FLAGS = -use-ocamlfind -libs $(LIBS)
+DEPS = processing,image
+BUILD = native
 
-DEPS=processing,image
 
 all:
-	ocamlbuild -Is ${DEPS} main.native
+	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
 
 test:
-	ocamlbuild -Is ${DEPS} test.native
+	$(OCAML) $(FLAGS) -Is ${DEPS} test.$(BUILD)
 
 clean:
-	ocamlbuild -Is ${DEPS} -clean 
+	$(OCAML) -Is ${DEPS} -clean 
