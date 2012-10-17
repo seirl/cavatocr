@@ -1,6 +1,9 @@
+(** This module can detect the skew angle of an image and rotate it *)
+
+(** π *)
 let pi = 3.14159
 
-(* Rotate the image matrix by the specified angle *)
+(** Rotate the image matrix by the specified angle *)
 let rotate mat angle =
     let (cos_a, sin_a) = (cos angle, sin angle) in
     let (w, h) = Matrix.get_dims mat in
@@ -26,18 +29,17 @@ let rotate mat angle =
     done;
     mat2
 
-
-(* Convert a radian angle into a degree angle *)
+(** Convert a radian angle into a degree angle *)
 let to_degrees = function rad -> (rad *. 180.) /. pi
-(* Convert a degree angle into a radian angle *)
-let to_radians = function deg -> (deg *. pi) /. 180.
 
+(** Convert a degree angle into a radian angle *)
+let to_radians = function deg -> (deg *. pi) /. 180.
 
 let histogram mat angle =
     let (w,h) = Matrix.get_dims mat in
     angle
 
-(* Get the skew angle of the image matrix *)
+(** Get the skew angle of the image matrix *)
 let get_skew_angle mat =
     let hist_opt = ref 0.
     and angle_opt = ref 0. in
