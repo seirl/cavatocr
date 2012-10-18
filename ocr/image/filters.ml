@@ -10,29 +10,19 @@ let color2grey (r,g,b) =
     in (grey,grey,grey)
 
 (** Turns an image into greyscale *)
-let image2grey src dst =
-    let (w,h) = Image.get_dims src in
+let image2grey src =
+  let (w,h) = Image.get_dims src in
+  let dst = Image.create_surface w h in
     for y = 0 to h - 1 do
-        for x = 0 to w - 1 do
-            Sdlvideo.put_pixel_color dst x y
-        (color2grey (Sdlvideo.get_pixel_color src x y ))
-        done
-    done
-
-(** Binarization step *)
-let seuil imageBW =
-    let s = ref 0 in
-    let (w,h) = Image.get_dims imageBW in
-    for y = 0 to h - 1 do
-        for x = 0 to w - 1 do
-            let (a,_,_) = Sdlvideo.get_pixel_color imageBW x y in
-            s := !s+a
-        done
+      for x = 0 to w - 1 do
+        Sdlvideo.put_pixel_color dst x y
+          (color2grey (Sdlvideo.get_pixel_color src x y ))
+      done;
     done;
-    !s / (w*h)
+    dst
 
 (** give x of (x,y,z) *)
-let g (x,y,z) = match (x,y,z) with
+let g = function
 |(a,_,_) -> a 
 
 (** Pixel binarization *)
@@ -52,50 +42,66 @@ let binarise imageBw tolerance =
     done;
     arr
 
-(**image binarization all expect borders pixels*)
-let binariseV2 imageBw imageBin =
-        let(w,h) =Image.get_dims imageBw in
-        for y = 1 to h - 2 do
-          for x = 1 to w - 2 do
-                  if (g(Sdlvideo.get_pixel_color imageBw (x-1) (y-1))+
-                     g(Sdlvideo.get_pixel_color imageBw  x (y-1))+
-                     g(Sdlvideo.get_pixel_color imageBw (x+1) (y-1))+
-                     g(Sdlvideo.get_pixel_color imageBw (x-1) (y))+
-                     g(Sdlvideo.get_pixel_color imageBw (x+1) (y))+
-                     g(Sdlvideo.get_pixel_color imageBw (x-1) (y+1))+
-                     g(Sdlvideo.get_pixel_color imageBw (x) (y+1))+
-                     g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1)))/8 <
-                    g( Sdlvideo.get_pixel_color imageBw y x )
-                  then
-                             Sdlvideo.put_pixel_color imageBin x y (0,0,0)
-                  else
-                          Sdlvideo.put_pixel_color imageBin x y (255,255,255)
-          done
-        done
-
 (**Image binarization borders pixels *)
-let binariseDoctor imageBin imageBinFinal= 
+let binariseDoctor imageBin = 
         let (w,h)= Image.get_dims imageBin in
         for x = 0 to w - 1 do 
-               if g(Sdlvideo.get_pixel_color imageBin x 0) < 127 then
-                     Sdlvideo.put_pixel_color imageBin (0,0,0)
-               else Sdlvideo.put_pixel_color imageBin (255,255,255);
+               if g (Sdlvideo.get_pixel_color imageBin x 0) < 127 then
+                     Sdlvideo.put_pixel_color imageBin x 0 (0,0,0)
+               else Sdlvideo.put_pixel_color imageBin x 0 (255,255,255);
 
-               if g(Sdlvideo.get_pixel_color imageBin x (h-1)) < 127 then
+               if g (Sdlvideo.get_pixel_color imageBin x (h-1)) < 127 then
                      Sdlvideo.put_pixel_color imageBin x (h-1)  (0,0,0)
                else Sdlvideo.put_pixel_color imageBin x (h-1) (255,255,255)
         done;
         
         for y = 0 to h -1 do
-               if g(Sdlvideo.get_pixel_color imageBin 0 y ) < 127 then
+               if g (Sdlvideo.get_pixel_color imageBin 0 y ) < 127 then
                        Sdlvideo.put_pixel_color imageBin 0 y (0,0,0)
-               else Sdlvideo.put_pixel_color imageBin (255,255,255);
+               else Sdlvideo.put_pixel_color imageBin 0 y (255,255,255);
 
-               if g(Sdlvideo.get_pixel_color imageBin (w-1) y ) < 127 then
-                     Sdlvideo.put_pixel_color imageBin (0,0,0)
-               else Sdlvideo.put_pixel_color imageBin
+               if g (Sdlvideo.get_pixel_color imageBin (w-1) y ) < 127 then
+                     Sdlvideo.put_pixel_color imageBin (w-1) y (0,0,0)
+               else Sdlvideo.put_pixel_color imageBin (w-1) y
                       (255,255,255) 
         done
+
+(**image binarization all expect borders pixels*)
+let binariseV2 imageBw =
+  let(w,h) =Image.get_dims imageBw in
+  let imageBin = Image.create_surface w h in
+    begin
+      for y = 1 to h - 2 do
+        for x = 1 to w - 2 do
+          if
+            (
+                g(Sdlvideo.get_pixel_color imageBw (x-1) (y-1))
+                +
+                g(Sdlvideo.get_pixel_color imageBw  x (y-1))
+                +
+                g(Sdlvideo.get_pixel_color imageBw (x+1) (y-1))
+                +
+                g(Sdlvideo.get_pixel_color imageBw (x-1) (y))
+                +
+                g(Sdlvideo.get_pixel_color imageBw (x+1) (y))
+                +
+                g(Sdlvideo.get_pixel_color imageBw (x-1) (y+1))
+                +
+                g(Sdlvideo.get_pixel_color imageBw (x) (y+1))
+                +
+                g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1))
+            )/8
+          < (* Less than *)
+            g(Sdlvideo.get_pixel_color imageBw y x )
+          then
+            Sdlvideo.put_pixel_color imageBin x y (0,0,0)
+          else
+            Sdlvideo.put_pixel_color imageBin x y (255,255,255)
+        done;
+      done;
+      binariseDoctor imageBin;
+      imageBin
+    end
 
 (** Delete noize *)
 let sorttable arraytable =
