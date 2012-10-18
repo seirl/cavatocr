@@ -5,3 +5,5 @@ _build
 __pycache__
 *.pyc
 conf.yml
+*.{jpg,png,bmp,gif}
+test.ml
