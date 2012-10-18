@@ -1,7 +1,14 @@
+(* In this file, the term "image" refer to a bool array array (the binary matrix
+ * representation of an image
+ * *)
+
+(* Get the vertical histogram of the image *)
 let hist_of_img img =
   Array.map (Array.fold_left (fun n b -> if b then n+1 else n) 0) img
 
-let merge_lines (hist:int array) (img:bool array array) =
+(* Get the list of lines present in the image *)
+let get_lines (img:bool array array) =
+  let hist = hist_of_img img in
   let rec merge_per_line (line:int) (accu:bool array array list) =
     (* End of image, return final merge *)
     if line >= Array.length hist then accu
@@ -18,22 +25,3 @@ let merge_lines (hist:int array) (img:bool array array) =
       | block_lines :: accu_t -> Array.append block_lines ([| img.(line) |]) :: accu_t
   in
     merge_per_line 0 []
-
-let get_lines img =
-  let hist = hist_of_img img in
-    merge_lines hist img
-
-(*
-let main () =
-  let sdl_init () =
-    begin
-      Sdl.init [`EVERYTHING];
-      Sdlevent.enable_events Sdlevent.all_events_mask;
-    end
-  and sdl_load () =
-    Sdlloader.load_image Sys.argv.(1)
-  in
-
-    sdl_init;
-    let img = sdl_load () in
-*)
