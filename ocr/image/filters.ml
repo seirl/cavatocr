@@ -31,6 +31,9 @@ let seuil imageBW =
     done;
     !s / (w*h)
 
+(** give x of (x,y,z) *)
+let g (x,y,z) = match (x,y,z) with
+|(a,_,_) -> a 
 
 (** Pixel binarization *)
 let transform (x,y,z) tolerance = match (x,y,z) with
@@ -49,6 +52,50 @@ let binarise imageBw tolerance =
     done;
     arr
 
+(**image binarization all expect borders pixels*)
+let binariseV2 imageBw imageBin =
+        let(w,h) =Image.get_dims imageBw in
+        for y = 1 to h - 2 do
+          for x = 1 to w - 2 do
+                  if (g(Sdlvideo.get_pixel_color imageBw (x-1) (y-1))+
+                     g(Sdlvideo.get_pixel_color imageBw  x (y-1))+
+                     g(Sdlvideo.get_pixel_color imageBw (x+1) (y-1))+
+                     g(Sdlvideo.get_pixel_color imageBw (x-1) (y))+
+                     g(Sdlvideo.get_pixel_color imageBw (x+1) (y))+
+                     g(Sdlvideo.get_pixel_color imageBw (x-1) (y+1))+
+                     g(Sdlvideo.get_pixel_color imageBw (x) (y+1))+
+                     g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1)))/8 <
+                    g( Sdlvideo.get_pixel_color imageBw y x )
+                  then
+                             Sdlvideo.put_pixel_color imageBin x y (0,0,0)
+                  else
+                          Sdlvideo.put_pixel_color imageBin x y (255,255,255)
+          done
+        done
+
+(**Image binarization borders pixels *)
+let binariseDoctor imageBin imageBinFinal= 
+        let (w,h)= Image.get_dims imageBin in
+        for x = 0 to w - 1 do 
+               if g(Sdlvideo.get_pixel_color imageBin x 0) < 127 then
+                     Sdlvideo.put_pixel_color imageBin (0,0,0)
+               else Sdlvideo.put_pixel_color imageBin (255,255,255);
+
+               if g(Sdlvideo.get_pixel_color imageBin x (h-1)) < 127 then
+                     Sdlvideo.put_pixel_color imageBin x (h-1)  (0,0,0)
+               else Sdlvideo.put_pixel_color imageBin x (h-1) (255,255,255)
+        done;
+        
+        for y = 0 to h -1 do
+               if g(Sdlvideo.get_pixel_color imageBin 0 y ) < 127 then
+                       Sdlvideo.put_pixel_color imageBin 0 y (0,0,0)
+               else Sdlvideo.put_pixel_color imageBin (255,255,255);
+
+               if g(Sdlvideo.get_pixel_color imageBin (w-1) y ) < 127 then
+                     Sdlvideo.put_pixel_color imageBin (0,0,0)
+               else Sdlvideo.put_pixel_color imageBin
+                      (255,255,255) 
+        done
 
 (** Delete noize *)
 let sorttable arraytable =
