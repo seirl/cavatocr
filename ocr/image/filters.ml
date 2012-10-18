@@ -61,7 +61,8 @@ let sorttable arraytable =
         done;
         arraytable.(i) <- arraytable.(!minplace) ;
         arraytable.(!minplace) <- temp
-    done
+    done;
+    arraytable
 
 let rec mathmedian l length = match l with
     | [] -> failwith "wat"

@@ -3,7 +3,7 @@ let _ =
     let surface = Image.load Sys.argv.(1) in
     let display = Image.display_for_image surface in
     let mat = (Preprocessing.binarise surface (Preprocessing.seuil surface)) in
-    let rotate_mat = Rotate.rotate mat 0.2 in
+    let rotate_mat = Rotate.rotate (Preprocessing.sorttable mat) 0.2 in
     Image.show surface display;
     Image.wait_key();
     let surface2 = Image.surface_of_matrix rotate_mat in
