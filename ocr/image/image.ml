@@ -41,18 +41,20 @@ let color_of_bool = function
     | false -> Sdlvideo.white
 
 (** Initialize an SDL surface *)
-let create_surface w h = Sdlvideo.create_RGB_surface [] ~w:w ~h:h ~bpp:8
+let create_surface w h = Sdlvideo.create_RGB_surface
+    [ `SWSURFACE ] ~w:w ~h:h ~bpp:32
     ~rmask:Int32.zero ~gmask:Int32.zero ~bmask:Int32.zero ~amask:Int32.zero 
 
 (** Convert a bool matrix (array array) to a black/white SDL surface *)
 let surface_of_matrix matrix =
-    let w, h = Matrix.nbcols matrix, Matrix.nbrows matrix in
+    let h, w = Matrix.nbcols matrix, Matrix.nbrows matrix in
     let surface = create_surface w h in
     begin
-        for c = 0 to w - 1 do
-            for r = 0 to h - 1 do
-                let (x,y) = (c,r) in
-                Sdlvideo.put_pixel_color surface x y (color_of_bool matrix.(r).(c))
+        for c = 0 to h - 1 do
+            for r = 0 to w - 1 do
+                let (x,y) = (r,c) in
+                Sdlvideo.put_pixel_color surface x y
+                    (color_of_bool matrix.(r).(c))
             done
         done;
         surface

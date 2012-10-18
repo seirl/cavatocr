@@ -29,7 +29,7 @@ let seuil imageBW =
             s := !s+a
         done
     done;
-    !s / (w*h);
+    !s / (w*h)
 
 
 (** Pixel binarization *)

@@ -39,11 +39,11 @@ let histogram mat angle =
     let sample = 1 in
     let angle_diff = tan(angle) in
     let (w,h) = Matrix.get_dims mat in
-    let diff_y = - (int_of_float (w * angle_diff) in
+    let diff_y = - (int_of_float ((float w) *. angle_diff)) in
     let (min_y, max_y) = (max 0 diff_y, min h (h + diff_y)) in
     let num_rows = (max_y - min_y) / sample + 1 in
-    let dy = if angle < 0 then -1 else 1 in
-    let dx = dy / angle_diff in
+    let dy = if angle < 0. then -1 else 1 in
+    let dx = int_of_float ((float dy) /. angle_diff) in
     
     angle
 
