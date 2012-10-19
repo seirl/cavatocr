@@ -69,31 +69,31 @@ let laplacian_end imageBin =
                else Sdlvideo.put_pixel_color imageBin (w-1) y
                       (255,255,255) 
         done
-(** Filter median *)
-let filtreMedian imageBw = 
-        let(w,h) = Image.get_dims imageBw in
-        let table = Array.make 8 0 in
+
+(** median Filter *)
+let clean_bin imageBw = 
+  let(w,h) = Image.get_dims imageBw in
+  let image_clean = Image.create_surface w h in
+  let table = Array.make 9 0 in
     begin
       for y = 1 to h - 2 do
         for x = 1 to w - 2 do
-             table.(0) <-  g(Sdlvideo.get_pixel_color imageBw x y)
-             table.(1) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y-1))
-             table.(2) <-  g(Sdlvideo.get_pixel_color imageBw  x (y-1))        
-             table.(3) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y-1))
-             table.(4) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y))
-             table.(5) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y))
-             table.(6) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y+1))
-             table.(7) <-  g(Sdlvideo.get_pixel_color imageBw (x) (y+1))
-             table.(8) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1))
+          table.(0) <-  g(Sdlvideo.get_pixel_color imageBw x y);
+          table.(1) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y-1));
+          table.(2) <-  g(Sdlvideo.get_pixel_color imageBw  x (y-1));
+          table.(3) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y-1));
+          table.(4) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y));
+          table.(5) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y));
+          table.(6) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y+1));
+          table.(7) <-  g(Sdlvideo.get_pixel_color imageBw (x) (y+1));
+          table.(8) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1));
 
-             table.sort (* pas foctionelle*)
-             Sdlvideo.put_pixel_color x y (table.(4),table.(4),table.(4) )
-
+          Array.sort (-) table;
+          Sdlvideo.put_pixel_color image_clean x y (table.(4),table.(4),table.(4))
         done;
       done;
+      image_clean
     end
-
-
 
 (** Laplacian edge detection *)
 let laplacian imageBw =
@@ -131,10 +131,3 @@ let laplacian imageBw =
       laplacian_end imageBin;
       imageBin
     end
-
-let clean_bin img = img 
-
-let rec mathmedian l length = match l with
-    | [] -> failwith "wat"
-    | e::l when length = 5 -> e
-    | _::l -> mathmedian l (length-1)
