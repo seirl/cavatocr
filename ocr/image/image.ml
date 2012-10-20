@@ -59,3 +59,15 @@ let surface_of_matrix matrix =
         done;
         surface
     end
+
+let bool_of_pixel (color,_,_) = color = 255
+
+let matrix_of_surface surface =
+  let w,h = get_dims surface in
+  let mat = Array.make_matrix w h true in
+    for x = 0 to w do
+      for y = 0 to h do
+        mat.(x).(y) <- bool_of_pixel (Sdlvideo.get_pixel_color surface x y)
+      done;
+    done;
+    mat

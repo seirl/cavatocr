@@ -17,11 +17,11 @@ let get_lines (img:bool array array) =
     else if hist.(line) <= 2 then merge_per_line (line + 1) accu
 
     (* First line and non-empty or new non-empty line after some empty *)
-    else if line = 0 || hist.(line - 1) <= 2 then [| img.(line) |] :: accu
+    else if line = 0 || hist.(line - 1) <= 2 then ([| img.(line) |] :: accu)
 
     (* Another non-empty line *)
     else match accu with
       | [] -> failwith "merge_line: not first non-empty line but accu is empty"
-      | block_lines :: accu_t -> Array.append block_lines ([| img.(line) |]) :: accu_t
+      | block_lines :: accu_t -> (Array.append block_lines ([| img.(line) |])) :: accu_t
   in
     merge_per_line 0 []

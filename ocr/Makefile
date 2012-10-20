@@ -2,7 +2,7 @@ OCAML = ocamlbuild
 LIBS = sdlloader
 FLAGS = -use-ocamlfind -libs $(LIBS)
 DEPS = processing,image
-BUILD = byte
+BUILD = native
 
 
 all:
