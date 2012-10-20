@@ -1,9 +1,7 @@
 let _ =
     Image.sdl_init ();
-    let surface = Image.load Sys.argv.(1) in
-    let display = Image.display_for_image surface in
-    let mat = (Image.matrix_of_surface surface) in
-    Printf.printf "salut les gars\n";
+    let mat_rgb = Image.load Sys.argv.(1) in
+    let mat = Filters.filter mat_rgb in
     let skew_angle = Rotate.get_skew_angle mat in
     let rotate_mat = Rotate.rotate mat skew_angle in
     Image.show surface display;
