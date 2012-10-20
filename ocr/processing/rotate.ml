@@ -40,9 +40,9 @@ let to_radians = function deg -> (deg *. pi) /. 180.
 let pixels_count mat row st en =
     let count = ref 0 in
     for i = st to en do
-        count := count + if mat.(row).(i) then 1 else 0
+        count := !count + if mat.(row).(i) then 1 else 0
     done;
-    count
+    !count
 
 (** Cast a ray through the matrix with the given variations of coordinates *)
 let cast_ray mat row dx dy =
@@ -51,14 +51,14 @@ let cast_ray mat row dx dy =
     let st = ref 0 in
     let en = ref 0 in
     let (w,h) = Matrix.get_dims mat in
-    while !start < w || !row < 0 || !row > h do
-        en := start + dx;
-        en := if !en > w then w else en;
-        bits := bits + pixels_count mat row st en;
-        st := en;
-        row := row + dy
+    while !st < w || !row < 0 || !row > h do
+        en := !st + dx;
+        en := if !en > w then w else !en;
+        bits := !bits + pixels_count mat !row !st !en;
+        st := !en;
+        row := !row + dy
     done;
-    bits
+    !bits
 
 (** Get the chance of an angle to be the right orientation of the text *)
 let histogram mat angle =
@@ -72,15 +72,15 @@ let histogram mat angle =
     let dx = int_of_float ((float dy) /. angle_diff) in
     let rows = Array.make num_rows 0 in
     for i = 0 to num_rows do
-        rows.(i) <- cast_ray mat (min_y + i) dx dy)
+        rows.(i) <- cast_ray mat (min_y + i) dx dy
     done;
     let moy = (Array.fold_left (+) 0 rows) / num_rows in
     let sum = ref 0 in
     let sqr x = x * x in
     for i = 0 to num_rows do
-        sum := sum + sqr (rows.(i) - moy)
+        sum := !sum + sqr (rows.(i) - moy)
     done;
-    sum / moy
+    (float !sum) /. (float moy)
 
 (** Get the skew angle of the image matrix *)
 let get_skew_angle mat =
