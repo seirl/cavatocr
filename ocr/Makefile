@@ -1,5 +1,5 @@
 OCAML = ocamlbuild
-LIBS = sdlloader
+LIBS = sdlloader 
 FLAGS = -use-ocamlfind -libs $(LIBS)
 DEPS = processing,image
 BUILD = byte
