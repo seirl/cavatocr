@@ -70,6 +70,18 @@ let laplacian_end imageBin =
                       (255,255,255) 
         done
 
+let sorttable arraytable =
+  for i = 0 to Array.length arraytable - 1 do
+    let minplace = ref i
+    and temp = arraytable.(i) in
+      for j = i to Array.length arraytable - 1 do
+        if arraytable.(j) < arraytable.(!minplace) then
+          minplace := j
+      done;
+      arraytable.(i) <- arraytable.(!minplace) ;
+      arraytable.(!minplace) <- temp
+  done
+
 (** median Filter *)
 let clean_bin imageBw = 
   let (w,h) = Image.get_dims imageBw in
@@ -88,7 +100,7 @@ let clean_bin imageBw =
           table.(7) <-  g(Sdlvideo.get_pixel_color imageBw (x) (y+1));
           table.(8) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1));
 
-          (* Array.sort (-) table; *)
+          sorttable table;
           Sdlvideo.put_pixel_color image_clean x y (table.(4),table.(4),table.(4));
         done;
       done;
