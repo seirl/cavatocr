@@ -72,7 +72,7 @@ let laplacian_end imageBin =
 
 (** median Filter *)
 let clean_bin imageBw = 
-  let(w,h) = Image.get_dims imageBw in
+  let (w,h) = Image.get_dims imageBw in
   let image_clean = Image.create_surface w h in
   let table = Array.make 9 0 in
     begin
@@ -88,8 +88,8 @@ let clean_bin imageBw =
           table.(7) <-  g(Sdlvideo.get_pixel_color imageBw (x) (y+1));
           table.(8) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1));
 
-          Array.sort (-) table;
-          Sdlvideo.put_pixel_color image_clean x y (table.(4),table.(4),table.(4))
+          (* Array.sort (-) table; *)
+          Sdlvideo.put_pixel_color image_clean x y (table.(4),table.(4),table.(4));
         done;
       done;
       image_clean
@@ -131,3 +131,6 @@ let laplacian imageBw =
       laplacian_end imageBin;
       imageBin
     end
+
+let filter image = laplacian (clean_bin (binarize (image2grey image)))
+let filter_no_clean image = laplacian (binarize (image2grey image))
