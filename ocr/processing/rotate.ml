@@ -107,7 +107,7 @@ let get_skew_angle mat =
     (* First approximation with integer degrees *)
     for i = -45 to 45 do
         let angle = (float i) in
-        let hist = histogram2 mat (to_radians angle) in
+        let hist = histogram_rotate mat (to_radians angle) in
         if hist > !hist_opt then
             begin
             hist_opt := hist;
@@ -118,7 +118,7 @@ let get_skew_angle mat =
     for i = 10 * (int_of_float !angle_opt) - 10
     to 10 * (int_of_float !angle_opt) + 10 do
         let angle = (float i) /. 10. in
-        let hist = histogram2 mat (to_radians angle) in
+        let hist = histogram_rotate mat (to_radians angle) in
         if hist > !hist_opt then
             begin
                 hist_opt := hist;
