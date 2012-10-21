@@ -121,3 +121,4 @@ let edge image_bin =
 
 let filter image = edge (binarize (clean_bin (image2grey image)))
 let filter_no_clean image = edge (binarize (image2grey image))
+let filter_no_edge image = (binarize (image2grey image))
