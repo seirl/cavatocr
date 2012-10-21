@@ -91,3 +91,6 @@ let rec wait_key () =
       | _ -> wait_key ()
 
 let bool_of_pixel (color,_,_) = color = 255
+
+(** 1 if true, 0 otherwise *)
+let int_of_bool b = if b then 1 else 0
