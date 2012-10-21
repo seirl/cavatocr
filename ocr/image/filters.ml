@@ -11,123 +11,102 @@ let color2grey (r,g,b) =
 
 (** Turns an image into greyscale *)
 let image2grey src =
-  let (w,h) = Image.get_dims src in
-  let dst = Image.create_surface w h in
-    for y = 0 to h - 1 do
-      for x = 0 to w - 1 do
-        Sdlvideo.put_pixel_color dst x y
-          (color2grey (Sdlvideo.get_pixel_color src x y ))
+  let (w, h) = Matrix.get_dims src in
+  let dst = Matrix.make w h (0,0,0) in
+    for x = 0 to w - 1 do
+      for y = 0 to h - 1 do
+        dst.(x).(y) <- (color2grey (src.(x).(y)))
       done;
     done;
     dst
 
 (** give x of (x,y,z) *)
-let g = function
-|(a,_,_) -> a 
+let first (a,_,_) = a
 
 (** Pixel binarization *)
-let transform (x,y,z) tolerance = match (x,y,z) with
-    | (x,y,z) when x < tolerance -> false
-    | (x,y,z) -> true
+let transform (x,y,z) tolerance = x >= tolerance
 
 (** Image binarization *)
-let binarize imageBw =
-  let(w,h) =Image.get_dims imageBw in
-  let imageBin = Image.create_surface w h in
-    begin
-      for y = 0 to h do
-        for x = 0 to w do
-          if g(Sdlvideo.get_pixel_color imageBw x y) < 180 then
-            Sdlvideo.put_pixel_color imageBin x y (0,0,0)
-          else
-            Sdlvideo.put_pixel_color imageBin x y (255,255,255)
-        done;
+let binarize image_grey =
+  let (w, h) = Matrix.get_dims image_grey in
+  let imageBin = Matrix.make w h false in
+    for x = 0 to w - 1 do
+      for y = 0 to h - 1 do
+        imageBin.(x).(y) <- (first(image_grey.(x).(y)) < 180)
       done;
-      imageBin
-    end
-
-(** Laplacian edge detection finalisation *)
-let laplacian_end imageBin = 
-        let (w,h)= Image.get_dims imageBin in
-        for x = 0 to w - 1 do 
-               if g (Sdlvideo.get_pixel_color imageBin x 0) < 127 then
-                     Sdlvideo.put_pixel_color imageBin x 0 (0,0,0)
-               else Sdlvideo.put_pixel_color imageBin x 0 (255,255,255);
-
-               if g (Sdlvideo.get_pixel_color imageBin x (h-1)) < 127 then
-                     Sdlvideo.put_pixel_color imageBin x (h-1)  (0,0,0)
-               else Sdlvideo.put_pixel_color imageBin x (h-1) (255,255,255)
-        done;
-        
-        for y = 0 to h -1 do
-               if g (Sdlvideo.get_pixel_color imageBin 0 y ) < 127 then
-                       Sdlvideo.put_pixel_color imageBin 0 y (0,0,0)
-               else Sdlvideo.put_pixel_color imageBin 0 y (255,255,255);
-
-               if g (Sdlvideo.get_pixel_color imageBin (w-1) y ) < 127 then
-                     Sdlvideo.put_pixel_color imageBin (w-1) y (0,0,0)
-               else Sdlvideo.put_pixel_color imageBin (w-1) y
-                      (255,255,255) 
-        done
+    done;
+    imageBin
 
 (** median Filter *)
-let clean_bin imageBw = 
-  let(w,h) = Image.get_dims imageBw in
-  let image_clean = Image.create_surface w h in
+let clean_bin image_grey =
+  let (w, h) = Matrix.get_dims image_grey in
+  let image_clean = Matrix.make w h (0,0,0) in
   let table = Array.make 9 0 in
     begin
       for y = 1 to h - 2 do
         for x = 1 to w - 2 do
-          table.(0) <-  g(Sdlvideo.get_pixel_color imageBw x y);
-          table.(1) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y-1));
-          table.(2) <-  g(Sdlvideo.get_pixel_color imageBw  x (y-1));
-          table.(3) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y-1));
-          table.(4) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y));
-          table.(5) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y));
-          table.(6) <-  g(Sdlvideo.get_pixel_color imageBw (x-1) (y+1));
-          table.(7) <-  g(Sdlvideo.get_pixel_color imageBw (x) (y+1));
-          table.(8) <-  g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1));
+          table.(0) <-  first (image_grey.(x).(y)     );
+          table.(1) <-  first (image_grey.(x-1).(y-1) );
+          table.(2) <-  first (image_grey.(x).(y-1)   );
+          table.(3) <-  first (image_grey.(x+1).(y-1) );
+          table.(4) <-  first (image_grey.(x-1).(y)   );
+          table.(5) <-  first (image_grey.(x+1).(y)   );
+          table.(6) <-  first (image_grey.(x-1).(y+1) );
+          table.(7) <-  first (image_grey.(x).(y+1)   );
+          table.(8) <-  first (image_grey.(x+1).(y+1) );
 
-          Array.sort (-) table;
-          Sdlvideo.put_pixel_color image_clean x y (table.(4),table.(4),table.(4))
+          Array.fast_sort (-) table;
+          let m = table.(4) in
+            image_clean.(x).(y) <- (m,m,m)
         done;
       done;
       image_clean
     end
 
-(** Laplacian edge detection *)
-let laplacian imageBw =
-  let(w,h) =Image.get_dims imageBw in
-  let imageBin = Image.create_surface w h in
+(** (Laplacian ?) Edge detection *)
+let edge image_bin =
+  let(w, h) = Matrix.get_dims image_bin in
+  let image_edge = Matrix.make w h false
+  and iob = Matrix.int_of_bool in
     begin
-      for y = 1 to h - 2 do
-        for x = 1 to w - 2 do
-          if
+      for x = 1 to w - 2 do
+        for y = 1 to h - 2 do
+          let edge_average =
             (
-                g(Sdlvideo.get_pixel_color imageBw (x-1) (y-1))
-                +
-                g(Sdlvideo.get_pixel_color imageBw  x (y-1))
-                +
-                g(Sdlvideo.get_pixel_color imageBw (x+1) (y-1))
-                +
-                g(Sdlvideo.get_pixel_color imageBw (x-1) (y))
-                +
-                g(Sdlvideo.get_pixel_color imageBw (x+1) (y))
-                +
-                g(Sdlvideo.get_pixel_color imageBw (x-1) (y+1))
-                +
-                g(Sdlvideo.get_pixel_color imageBw (x) (y+1))
-                +
-                g(Sdlvideo.get_pixel_color imageBw (x+1) (y+1))
+              iob (image_bin.(x-1).(y-1) )
+              + (* plus *)
+              iob (image_bin.(x).(y-1)   )
+              + (* plus *)
+              iob (image_bin.(x+1).(y-1) )
+              + (* plus *)
+              iob (image_bin.(x-1).(y)   )
+              + (* plus *)
+              iob (image_bin.(x+1).(y)   )
+              + (* plus *)
+              iob (image_bin.(x-1).(y+1) )
+              + (* plus *)
+              iob (image_bin.(x).(y+1)   )
+              + (* plus *)
+              iob (image_bin.(x+1).(y+1) )
             )/8
-          < (* Less than *)
-            g(Sdlvideo.get_pixel_color imageBw x y )
-          then
-            Sdlvideo.put_pixel_color imageBin x y (0,0,0)
-          else
-            Sdlvideo.put_pixel_color imageBin x y (255,255,255)
+          in
+            image_edge.(x).(y) <- (edge_average < iob (image_bin.(x).(y)))
         done;
       done;
-      laplacian_end imageBin;
-      imageBin
+
+      (* Finish with image's own edges *)
+      for x = 0 to w - 1 do
+        image_edge.(x).(0) <- image_bin.(x).(0);
+        image_edge.(x).(h-1) <- image_bin.(x).(h-1)
+      done;
+      for y = 0 to h - 1 do
+        image_edge.(0).(y) <- image_bin.(0).(y);
+        image_edge.(w-1).(y) <- image_bin.(w-1).(y)
+      done;
+
+      image_edge
     end
+
+let filter image = edge (binarize (clean_bin (image2grey image)))
+let filter_no_clean image = edge (binarize (image2grey image))
+let filter_no_edge image = (binarize (image2grey image))
