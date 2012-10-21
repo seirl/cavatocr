@@ -37,18 +37,6 @@ let binarize image_grey =
     done;
     imageBin
 
-let sorttable arraytable =
-  for i = 0 to Array.length arraytable - 1 do
-    let minplace = ref i
-    and temp = arraytable.(i) in
-      for j = i to Array.length arraytable - 1 do
-        if arraytable.(j) < arraytable.(!minplace) then
-          minplace := j
-      done;
-      arraytable.(i) <- arraytable.(!minplace) ;
-      arraytable.(!minplace) <- temp
-  done
-
 (** median Filter *)
 let clean_bin image_grey =
   let (w, h) = Matrix.get_dims image_grey in
@@ -67,7 +55,7 @@ let clean_bin image_grey =
           table.(7) <-  first (image_grey.(x).(y+1)   );
           table.(8) <-  first (image_grey.(x+1).(y+1) );
 
-          sorttable table;
+          Array.fast_sort (-) table;
           let m = table.(4) in
             image_clean.(x).(y) <- (m,m,m)
         done;

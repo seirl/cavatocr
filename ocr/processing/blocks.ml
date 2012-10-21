@@ -2,26 +2,44 @@
  * representation of an image
  * *)
 
+let bool_sum = Array.fold_left (fun n b -> if b then n+1 else n) 0
+
+let get_line i h = Array.map (fun col -> col.(h - 1 - i))
+
 (* Get the vertical histogram of the image *)
 let hist_of_img img =
-  Array.map (Array.fold_left (fun n b -> if b then n+1 else n) 0) img
+  let (w, h) = Matrix.get_dims img in
+  let hist = Array.make h 0 in
+    begin
+      for y = 0 to h - 1 do
+        hist.(y) <- bool_sum (get_line y h img);
+      done;
+      hist
+    end
 
 (* Get the list of lines present in the image *)
 let get_lines (img:bool array array) =
   let hist = hist_of_img img in
-  let rec merge_per_line (line:int) (accu:bool array array list) =
-    (* End of image, return final merge *)
-    if line >= Array.length hist then accu
+  let h = Array.length hist in
+  let threshold = 2 in
+  let rec merge_per_line (y:int) (accu:bool array array list) =
+      (* End of image, return final merge *)
+      if y >= h then accu
 
-    (* Empty line, discard and evaluate next *)
-    else if hist.(line) <= 2 then merge_per_line (line + 1) accu
+      else let line = get_line y h img in
+        (* Empty line, discard and evaluate next *)
+        if hist.(y) <= threshold then merge_per_line (y + 1) accu
 
-    (* First line and non-empty or new non-empty line after some empty *)
-    else if line = 0 || hist.(line - 1) <= 2 then ([| img.(line) |] :: accu)
+        (* First line and non-empty or new non-empty line after some empty *)
+        else if y = 0 || hist.(y - 1) <= threshold
+        then merge_per_line (y + 1) ([| line |] :: accu)
 
-    (* Another non-empty line *)
-    else match accu with
-      | [] -> failwith "merge_line: not first non-empty line but accu is empty"
-      | block_lines :: accu_t -> (Array.append block_lines ([| img.(line) |])) :: accu_t
+        (* Another non-empty line *)
+        else match accu with
+          | [] -> failwith
+                    "merge_line: not first non-empty line but accu is empty"
+          | block_lines :: accu_t ->
+              merge_per_line (y + 1)
+                ((Array.append block_lines ([| line |])) :: accu_t)
   in
-    merge_per_line 0 []
+    List.map (fun mat -> Rotate.rotate mat (Rotate.pi /. (-2.))) (merge_per_line 0 [])
