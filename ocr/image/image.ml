@@ -16,7 +16,7 @@ let sdl_init () =
 let load name =
   let surface = Sdlloader.load_image name in
   let (w, h) = get_dims surface in
-  let mat = make w h (0,0,0) in
+  let mat = Matrix.make w h (0,0,0) in
     for x = 0 to w - 1 do
       for y = 0 to h - 1 do
         mat.(x).(y) <- Sdlvideo.get_pixel_color surface x y
@@ -38,7 +38,7 @@ let display w h = Sdlvideo.set_video_mode w h [`DOUBLEBUF]
 
 (** Same with the size of a given surface *)
 let display_for_image img =
-  let w, h = get_dims img in
+  let w, h = Matrix.get_dims img in
     display w h
 
 (** Display a SDL surface on the dst display *)
