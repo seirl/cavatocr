@@ -38,9 +38,9 @@ let rotate mat angle =
 (** Count the pixels of the given row from start to end *)
 let pixels_count mat row st en =
     let count = ref 0 in
-    for i = st to en do
+    for i = st to (en - 1) do
         count := !count + if mat.(i).(row) then 1 else 0;
-        mat.(i).(row) <- true
+        mat.(i).(row) <- true;
     done;
     !count
 
@@ -48,13 +48,14 @@ let pixels_count mat row st en =
 let cast_ray mat row dx dy =
     let row = ref row in
     let bits = ref 0 in
-    let st = ref 0 in
-    let en = ref 0 in
+    let st = ref 0. in
+    let en = ref 0. in
     let (w,h) = Matrix.get_dims mat in
-    while !st < w || !row < 0 || !row > h do
-        en := !st + dx;
-        en := if !en > w then w else !en;
-        bits := !bits + pixels_count mat !row !st !en;
+    while !st < float w || !row < 0 || !row > h do
+        en := !st +. dx;
+        en := if !en > float w then float w else !en;
+        bits := !bits + pixels_count
+            mat !row (abs (int_of_float !st)) (abs (int_of_float !en));
         st := !en;
         row := !row + dy
     done;
@@ -62,22 +63,26 @@ let cast_ray mat row dx dy =
 
 (** Get the chance of an angle to be the right orientation of the text *)
 let histogram mat angle =
-    let sample = 1 in
+    let sample = 10 in
     let angle_diff = tan(angle) in
-    let (w,h) = Matrix.get_dims mat in
+    let (h,w) = Matrix.get_dims mat in
     let diff_y = - (int_of_float ((float w) *. angle_diff)) in
     let (min_y, max_y) = (max 0 diff_y, min h (h + diff_y)) in
     let num_rows = (max_y - min_y) / sample + 1 in
     let dy = if angle < 0. then -1 else 1 in
-    let dx = int_of_float ((float dy) /. angle_diff) in
+    let dx = (float dy) /. angle_diff in
+    Printf.printf
+    "a=%f\nangle_diff=%f\nw h=%d %d\ndiff_y=%d\nmin_y max_y=%d\
+    \ %d\nnum_rows=%d\ndx dy=%f %d\n"
+    angle angle_diff w h diff_y min_y max_y num_rows dx dy;
     let rows = Array.make num_rows 0 in
-    for i = 0 to num_rows do
-        rows.(i) <- cast_ray mat (min_y + i * sample) dx dy
+    for i = 0 to num_rows - 1 do
+        rows.(i) <- cast_ray mat (min_y + i * sample) dx dy;
     done;
     let moy = (Array.fold_left (+) 0 rows) / num_rows in
     let sum = ref 0 in
     let sqr x = x * x in
-    for i = 0 to num_rows do
+    for i = 0 to num_rows - 1 do
         sum := !sum + sqr (rows.(i) - moy)
     done;
     (float !sum) /. (float moy)
@@ -85,12 +90,12 @@ let histogram mat angle =
 (** Get the chance of an angle to be the right orientation of the text
  * This version performs a full rotation of the picture for each angle *)
 let histogram_rotate mat angle =
-    let sample = 4 in
+    let sample = 10 in
     let rotated_mat = rotate mat angle in
     let (w,h) = Matrix.get_dims rotated_mat in
     let rows = Array.make (h / sample) 0 in
     for i = 0 to h / sample - 1  do
-        rows.(i) <- pixels_count rotated_mat (i * sample) 0 (w - 1)
+        rows.(i) <- pixels_count rotated_mat (i * sample) 0 w
     done;
     let moy = (Array.fold_left (+) 0 rows) / h in
     let sum = ref 0 in
@@ -105,7 +110,7 @@ let get_skew_angle mat =
     let hist_opt = ref 0.
     and angle_opt = ref 0. in
     (* First approximation with integer degrees *)
-    for i = -45 to 45 do
+    for i = -25 to 25 do
         let angle = (float i) in
         let hist = histogram_rotate mat (to_radians angle) in
         if hist > !hist_opt then
