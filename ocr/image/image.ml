@@ -1,12 +1,9 @@
-(** Get the dimensions of an SDL surface: a couple (width, height) *)
-let get_surface_dims img =
+(** Get the dimensions of a SDL surface: a couple (width, height) *)
+let get_dims img =
 (
       (Sdlvideo.surface_info img).Sdlvideo.w,
       (Sdlvideo.surface_info img).Sdlvideo.h
 )
-
-(** Get the dimension of a matrix of any type: a coupel (width, height *)
-let get_dims img = (Array.length img, Array.length (img.(0)))
 
 (** Initialize SDL *)
 let sdl_init () =
@@ -15,52 +12,17 @@ let sdl_init () =
     Sdlevent.enable_events Sdlevent.all_events_mask;
   end
 
-(** Load an image as a matrix of three color: (int,int,int) array array *)
-let load name =
-  let surface = Sdlloader.load_image name in
-  let (w, h) = get_surface_dims surface in
-  let mat = Array.make_matrix w h (0,0,0) in
-    for x = 0 to w - 1 do
-      for y = 0 to h - 1 do
-        mat.(x).(y) <- Sdlvideo.get_pixel_color surface x y
-      done;
-    done;
-    mat
+(** Load an image as a SDL rgb surface *)
+let load name = Sdlloader.load_image name
 
 let color_of_bool = function
     | true -> Sdlvideo.black
     | false -> Sdlvideo.white
 
-(** Initialize an SDL surface *)
+(** Initialize a SDL surface *)
 let create_surface w h = Sdlvideo.create_RGB_surface
     [ `SWSURFACE ] ~w:w ~h:h ~bpp:32
     ~rmask:Int32.zero ~gmask:Int32.zero ~bmask:Int32.zero ~amask:Int32.zero 
-
-(** Convert a bool matrix (bool array array) to a black/white SDL surface *)
-let surface_of_matrix matrix =
-  let (w, h) = get_dims matrix in
-  let surface = create_surface w h in
-    begin
-      for x = 0 to w - 1 do
-        for y = 0 to h - 1 do
-          Sdlvideo.put_pixel_color surface x y (color_of_bool matrix.(x).(y));
-        done;
-      done;
-      surface
-    end
-
-(** Convert a rgb matrix ((int,int,int) array array) to a SDL surface *)
-let surface_of_rgb_matrix matrix =
-    let (w, h) = get_dims matrix in
-    let surface = create_surface w h in
-    begin
-        for x = 0 to w - 1 do
-            for y = 0 to h - 1 do
-                Sdlvideo.put_pixel_color surface x y matrix.(x).(y)
-            done
-        done;
-        surface
-    end
 
 (** Get a display surface *)
 let display w h = Sdlvideo.set_video_mode w h [`DOUBLEBUF]
@@ -70,18 +32,11 @@ let display_for_image img =
   let w, h = get_dims img in
     display w h
 
-(** Display an SDL surface on the dst display *)
+(** Display a SDL surface on the dst display *)
 let show img dst =
   let d = Sdlvideo.display_format img in
     Sdlvideo.blit_surface d dst ();
     Sdlvideo.flip dst
-
-(** Display the corresponding SDL surface of a bool matrix on the dst display *)
-let show_matrix mat dst =
-  show (surface_of_matrix mat) dst
-
-let show_rgb_matrix mat dst =
-  show (surface_of_rgb_matrix mat) dst
 
 (** Wait for a key to be pressed before continue *)
 let rec wait_key () =
@@ -91,6 +46,3 @@ let rec wait_key () =
       | _ -> wait_key ()
 
 let bool_of_pixel (color,_,_) = color = 255
-
-(** 1 if true, 0 otherwise *)
-let int_of_bool b = if b then 1 else 0

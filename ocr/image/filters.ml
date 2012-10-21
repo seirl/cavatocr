@@ -11,8 +11,8 @@ let color2grey (r,g,b) =
 
 (** Turns an image into greyscale *)
 let image2grey src =
-  let (w, h) = Image.get_dims src in
-  let dst = Array.make_matrix w h (0,0,0) in
+  let (w, h) = Matrix.get_dims src in
+  let dst = Matrix.make w h (0,0,0) in
     for x = 0 to w - 1 do
       for y = 0 to h - 1 do
         dst.(x).(y) <- (color2grey (src.(x).(y)))
@@ -28,8 +28,8 @@ let transform (x,y,z) tolerance = x >= tolerance
 
 (** Image binarization *)
 let binarize image_grey =
-  let (w, h) = Image.get_dims image_grey in
-  let imageBin = Array.make_matrix w h false in
+  let (w, h) = Matrix.get_dims image_grey in
+  let imageBin = Matrix.make w h false in
     for x = 0 to w - 1 do
       for y = 0 to h - 1 do
         imageBin.(x).(y) <- (first(image_grey.(x).(y)) < 180)
@@ -51,8 +51,8 @@ let sorttable arraytable =
 
 (** median Filter *)
 let clean_bin image_grey =
-  let (w, h) = Image.get_dims image_grey in
-  let image_clean = Array.make_matrix w h (0,0,0) in
+  let (w, h) = Matrix.get_dims image_grey in
+  let image_clean = Matrix.make w h (0,0,0) in
   let table = Array.make 9 0 in
     begin
       for y = 1 to h - 2 do
@@ -77,9 +77,9 @@ let clean_bin image_grey =
 
 (** (Laplacian ?) Edge detection *)
 let edge image_bin =
-  let(w, h) = Image.get_dims image_bin in
-  let image_edge = Array.make_matrix w h false
-  and iob = Image.int_of_bool in
+  let(w, h) = Matrix.get_dims image_bin in
+  let image_edge = Matrix.make w h false
+  and iob = Matrix.int_of_bool in
     begin
       for x = 1 to w - 2 do
         for y = 1 to h - 2 do
