@@ -1,14 +1,17 @@
-OCAML = ocamlbuild
-LIBS = sdlloader 
-FLAGS = -use-ocamlfind -libs $(LIBS)
-DEPS = processing,image
-BUILD = native
+OCAML := ocamlbuild
+libs := sdlloader
+FLAGS := -use-ocamlfind -libs $(libs)
+DEPS := .,processing,image
+BUILD := native
+
+find_files := $(wildcard $(folder)/*)
+SOURCES := $(foreach folder,$(DEPS),$(find_files))
 
 
-all:
+all: $(SOURCES)
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
 
-test:
+test: $(SOURCES)
 	$(OCAML) $(FLAGS) -Is ${DEPS} test.$(BUILD)
 
 clean:
