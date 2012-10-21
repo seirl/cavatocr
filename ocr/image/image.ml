@@ -52,6 +52,7 @@ let rec wait_key () =
   let e = Sdlevent.wait_event () in
     match e with
         Sdlevent.KEYDOWN _ -> ()
+      | Sdlevent.QUIT -> failwith "i'm outta here"
       | _ -> wait_key ()
 
 (** Convert a bool matrix (bool array array) to a black/white SDL surface *)
