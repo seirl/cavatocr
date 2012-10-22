@@ -8,8 +8,7 @@ let window =
   ignore (wnd#connect#destroy GMain.quit);
   wnd
 
-(*delete main page *)
-
+(** Delete main page *)
 let confirm _ = 
   let dlg = GWindow.message_dialog
     ~message:"<b><big>Do you really want to leave ?</big>\n\n\
@@ -24,35 +23,36 @@ let confirm _ =
   dlg#destroy ();
   res
 
-
-let vbox = GPack.vbox  (* Box where the image is put*)
+(* Box where the image is put*)
+let vbox = GPack.vbox
   ~spacing:2
   ~border_width:2
   ~packing:window#add ()
 
-
-let toolbar = GButton.toolbar   (*box of toolbar of top  inteface*)  
+(*box of toolbar of top  inteface*)  
+let toolbar = GButton.toolbar
   ~orientation:`HORIZONTAL  
   ~style:`ICONS 
   (*~layout:`SPREAD*) (*This fonction bug*)
   ~packing:(vbox#pack ~expand:false) ()  
 
+(*Box of the pic *)
+let view = GPack.vbox ~packing:vbox#add ()
 
-let view = GPack.vbox ~packing:vbox#add () (*Box of the pic *)
-
-let bbox = GPack.button_box `HORIZONTAL (*Box of bottom interface*)
+(*Box of bottom interface*)
+let bbox = GPack.button_box `HORIZONTAL
   ~layout:`EDGE 
   ~border_width:2
   ~packing:(vbox#pack ~expand:false) () 
 
 (*Check if we can add the pic & add*)
 let may_view btn () =
-match btn#filename with
-Some n ->
-ignore (GMisc.image
-~file: n
-~packing:view#add())
-| None -> ()
+  match btn#filename with
+      Some n -> ignore
+        (GMisc.image
+        ~file: n
+        ~packing:view#add())
+    | None -> ()
 
 (*Stock of picture for the toolbar*)
 let item = GButton.tool_item ~packing:toolbar#insert () 
@@ -61,72 +61,74 @@ let item3 = GButton.tool_item ~packing:toolbar#insert ()
 let item4 = GButton.tool_item ~packing:toolbar#insert ()
 
 let buttonopen =
-let btn = GFile.chooser_button
-~action:`OPEN
-~packing:item#add ()
-          in ignore (btn#connect#selection_changed (may_view btn));
+  let btn = GFile.chooser_button
+              ~action:`OPEN
+              ~packing:item#add ()
+  in ignore (btn#connect#selection_changed (may_view btn));
 btn
 
 (* the preprocessing function, add the link to the real action*)
 
 let fonction1 = GButton.button
-~packing: bbox#add()
-~label: "preprocessing"
+                  ~packing: bbox#add()
+                  ~label: "preprocessing"
 
 (*The extraction function*)
 let fonction2 = GButton.button
-~packing: bbox#add()
-~label: "extract"
+                  ~packing: bbox#add()
+                  ~label: "extract"
 (* fonction1#connect#clicked ~callback: fonction args*)
 
 
 let btn = GButton.button
-~packing: item2#add()
-~label: "Edit"
+            ~packing: item2#add()
+            ~label: "Edit"
 (*add a menu with radio button of the filtres*)
 
 
 let help_button =
   let dlg = GWindow.message_dialog
-    
-~message:"<b><big>Need help ?</big>\n\n\
-type CavatOCR --help</b>"
-    ~parent:window
-    ~destroy_with_parent:true
-    ~use_markup:true
-    ~message_type:`QUESTION
-    ~position:`CENTER_ON_PARENT
-    ~buttons:GWindow.Buttons.ok     ()
- in
+              ~message:"<b><big>Need help ?</big>\n\n\
+                        type CavatOCR --help</b>"
+              ~parent:window
+                        ~destroy_with_parent:true
+                        ~use_markup:true
+                        ~message_type:`QUESTION
+                        ~position:`CENTER_ON_PARENT
+                        ~buttons:GWindow.Buttons.ok     ()
+  in
   let btn = GButton.button ~stock:`HELP ~packing:item3#add () in
-  ignore (GMisc.image ~stock:`HELP ~packing:btn#set_image ());
-  ignore (btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
-  btn
+    ignore (GMisc.image ~stock:`HELP ~packing:btn#set_image ());
+    ignore (btn#connect#clicked
+              (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
+    btn
 
 
 let about_button =
   let dlg = GWindow.about_dialog
-  ~authors:["Pinkie PIE :\nHervot Paul, Pietri Antoine,
- Kostas Thomas, Lefebvre Stephane"]
-    ~copyright:"2012"
-    ~license:"Public License."
-    ~version:"1.00"
-    ~website:"http://cavatocr.serialk.fr/"
-    ~website_label:"Our website"
-    ~position:`CENTER_ON_PARENT
-    ~parent:window
-    ~destroy_with_parent:true () in
+              ~authors:["Pinkie PIE :\nHervot Paul, Pietri Antoine,
+                        Kostas Thomas, Lefebvre Stephane"]
+              ~copyright:"2012"
+              ~license:"Public License."
+              ~version:"1.00"
+              ~website:"http://cavatocr.serialk.fr/"
+              ~website_label:"Our website"
+              ~position:`CENTER_ON_PARENT
+              ~parent:window
+              ~destroy_with_parent:true () in
+
   let btn = GButton.button ~stock:`ABOUT ~packing:item4#add () in
   ignore (GMisc.image ~stock:`ABOUT ~packing:btn#set_image ());
-  ignore (btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
+  ignore (btn#connect#clicked
+            (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
   btn
 
 let buttonquit = 
   let btn = GButton.button
-    ~stock:`QUIT
-    ~packing:bbox#add () in
-  ignore (btn#connect#clicked ~callback:GMain.quit);
-  btn
+              ~stock:`QUIT
+              ~packing:bbox#add () in
+    ignore (btn#connect#clicked ~callback:GMain.quit);
+    btn
 
 let _ =
   ignore (window#event#connect#delete confirm);
