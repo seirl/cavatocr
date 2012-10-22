@@ -8,7 +8,7 @@ let window =
   ignore (wnd#connect#destroy GMain.quit);
   wnd
 
-(** ask for confirm when quit*)
+(** Ask for confirm when quit*)
 let confirm _ = 
   let dlg = GWindow.message_dialog
     ~message:"<b><big>Do you really want to leave ?</big>\n\n\
@@ -29,7 +29,7 @@ let vbox = GPack.vbox
   ~border_width:2
   ~packing:window#add ()
 
-(** box of toolbar of top  inteface*)
+(** Box of toolbar of top  inteface*)
 let toolbar = GButton.toolbar
   ~orientation:`HORIZONTAL  
   ~style:`ICONS 
@@ -67,7 +67,7 @@ let btn = GFile.chooser_button
           in ignore (btn#connect#selection_changed (may_view btn));
 btn
 
-(** the preprocessing function, add the link to the real action*)
+(** The preprocessing function, add the link to the real action*)
 let fonction1 = GButton.button
 ~packing: bbox#add()
 ~label: "preprocessing"
