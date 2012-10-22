@@ -1,11 +1,11 @@
 let window =
-  GMain.init ();
+  ignore (GMain.init ());
   let wnd = GWindow.window
     ~title:"CavatOCR"
     ~position:`CENTER 
     ~resizable:true
     ~width:400 ~height:600 () in
-  wnd#connect#destroy GMain.quit;
+  ignore (wnd#connect#destroy GMain.quit);
   wnd
 
 (*delete main page *)
@@ -64,7 +64,7 @@ let buttonopen =
 let btn = GFile.chooser_button
 ~action:`OPEN
 ~packing:item#add ()
-          in btn#connect#selection_changed (may_view btn);
+          in ignore (btn#connect#selection_changed (may_view btn));
 btn
 
 (* the preprocessing function, add the link to the real action*)
@@ -99,8 +99,8 @@ type CavatOCR --help</b>"
     ~buttons:GWindow.Buttons.ok     ()
  in
   let btn = GButton.button ~stock:`HELP ~packing:item3#add () in
-   GMisc.image ~stock:`HELP ~packing:btn#set_image ();
-  btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ());
+  ignore (GMisc.image ~stock:`HELP ~packing:btn#set_image ());
+  ignore (btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
   btn
 
 
@@ -117,19 +117,19 @@ let about_button =
     ~parent:window
     ~destroy_with_parent:true () in
   let btn = GButton.button ~stock:`ABOUT ~packing:item4#add () in
-   GMisc.image ~stock:`ABOUT ~packing:btn#set_image ();
-  btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ());
+  ignore (GMisc.image ~stock:`ABOUT ~packing:btn#set_image ());
+  ignore (btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
   btn
 
 let buttonquit = 
   let btn = GButton.button
     ~stock:`QUIT
     ~packing:bbox#add () in
-  btn#connect#clicked ~callback:GMain.quit;
+  ignore (btn#connect#clicked ~callback:GMain.quit);
   btn
 
 let _ =
-  window#event#connect#delete confirm;
+  ignore (window#event#connect#delete confirm);
   window#show ();
   GMain.main ()
 
