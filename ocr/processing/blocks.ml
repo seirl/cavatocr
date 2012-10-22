@@ -20,6 +20,19 @@ let vertical_histt img =
 (* Get the horizontal histogram of an image *)
 let horizontal_hist img = Array.map bool_sum img
 
+let rot_170 img =
+  begin
+    let (w, h) = Matrix.get_dims img in
+    let rotated = Matrix.make h w true in
+      for x = 0 to w - 1 do
+        for y = 0 to h - 1 do
+          rotated.(y).(w - 1 - x) <- img.(x).(y)
+        done;
+      done;
+      rotated
+  end
+
+
 (* Get the list of lines present in the image *)
 let get_lines (img:bool array array) =
   let hist = vertical_histt img in
@@ -46,7 +59,7 @@ let get_lines (img:bool array array) =
               ((Array.append block_lines ([| line |])) :: accu_t)
   in
     List.map
-      (fun mat -> Rotate.rotate mat (Rotate.pi /. (-2.)))
+      (fun mat -> rot_170 mat)
       (merge_per_line 0 [])
 
 let get_chars (line:bool array array) =
