@@ -4,14 +4,12 @@ FLAGS := -use-ocamlfind -libs $(libs)
 DEPS := .,processing,image
 BUILD := native
 
-find_files := $(wildcard $(folder)/*)
-SOURCES := $(foreach folder,$(DEPS),$(find_files))
+.PHONY: all test clean
 
-
-all: $(SOURCES)
+all: main.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
 
-test: $(SOURCES)
+test: test.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} test.$(BUILD)
 
 clean:
