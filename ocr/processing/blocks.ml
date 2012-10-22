@@ -34,7 +34,7 @@ let rot_170 img =
 
 
 (* Get the list of lines present in the image *)
-let get_lines (img:bool array array) =
+let lines_of_image (img:bool array array) =
   let hist = vertical_histt img in
   let h = Array.length hist in
   let threshold = 2 in
@@ -62,10 +62,10 @@ let get_lines (img:bool array array) =
       (fun mat -> rot_170 mat)
       (merge_per_line 0 [])
 
-let get_chars (line:bool array array) =
+let chars_of_line (line:bool array array) =
   let hist = horizontal_hist line in
   let w = Array.length hist in
-  let threshold = 2 in
+  let threshold = 4 in
   let rec merge_per_col (x:int) (accu:bool array array list) =
     (* End of image, return final merge *)
     if x >= w then accu
@@ -87,3 +87,5 @@ let get_chars (line:bool array array) =
               ((Array.append block_char ([| col |])) :: accu_t)
   in
     merge_per_col 0 []
+
+let chars_of_image img = List.map (chars_of_line) (lines_of_image img)
