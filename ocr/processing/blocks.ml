@@ -65,7 +65,7 @@ let lines_of_image (img:bool array array) =
 let chars_of_line (line:bool array array) =
   let hist = horizontal_hist line in
   let w = Array.length hist in
-  let threshold = 4 in
+  let threshold = 3 in
   let rec merge_per_col (x:int) (accu:bool array array list) =
     (* End of image, return final merge *)
     if x >= w then accu
