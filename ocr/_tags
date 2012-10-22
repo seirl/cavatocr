@@ -1,2 +1,2 @@
 true: debug
-<**/*>: package(sdl)
+<**/*>: package(sdl,lablgtk2)
