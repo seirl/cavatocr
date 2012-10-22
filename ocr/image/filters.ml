@@ -1,13 +1,13 @@
 (** Get the gray level of a color *)
 let level (r,g,b) =
-    (float_of_int(r) *. 0.3 +.
-     float_of_int(g) *.  0.59 +.
-     float_of_int(b) *. 0.11) /. 255.
+  (float_of_int(r) *. 0.3 +.
+   float_of_int(g) *.  0.59 +.
+   float_of_int(b) *. 0.11) /. 255.
 
 (** Recreates the color from its grey level *)
 let color2grey (r,g,b) =
-    let grey = int_of_float (level (r,g,b) *. 255.)
-    in (grey,grey,grey)
+  let grey = int_of_float (level (r,g,b) *. 255.)
+  in (grey,grey,grey)
 
 (** Turns an image into greyscale *)
 let image2grey src =
@@ -63,7 +63,7 @@ let clean_bin image_grey =
       image_clean
     end
 
-(** (Laplacian ?) Edge detection *)
+(** Edge detection *)
 let edge image_bin =
   let(w, h) = Matrix.get_dims image_bin in
   let image_edge = Matrix.make w h false

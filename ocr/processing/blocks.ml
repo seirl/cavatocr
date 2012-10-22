@@ -7,7 +7,7 @@ let bool_sum = Array.fold_left (fun n b -> if b then n+1 else n) 0
 let get_line i h = Array.map (fun col -> col.(h - 1 - i))
 
 (* Get the vertical histogram of an image *)
-let hist_vert img =
+let vertical_histt img =
   let (w, h) = Matrix.get_dims img in
   let hist = Array.make h 0 in
     begin
@@ -18,11 +18,11 @@ let hist_vert img =
     end
 
 (* Get the horizontal histogram of an image *)
-let hist_hor img = Array.map bool_sum img
+let horizontal_hist img = Array.map bool_sum img
 
 (* Get the list of lines present in the image *)
 let get_lines (img:bool array array) =
-  let hist = hist_vert img in
+  let hist = vertical_histt img in
   let h = Array.length hist in
   let threshold = 2 in
   let rec merge_per_line (y:int) (accu:bool array array list) =
@@ -50,7 +50,7 @@ let get_lines (img:bool array array) =
       (merge_per_line 0 [])
 
 let get_chars (line:bool array array) =
-  let hist = hist_hor line in
+  let hist = horizontal_hist line in
   let w = Array.length hist in
   let threshold = 2 in
   let rec merge_per_col (x:int) (accu:bool array array list) =
