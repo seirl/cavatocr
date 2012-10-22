@@ -32,6 +32,8 @@ let _ =
       List.iter show lines;
 
     let chars = match lines with
-      | _ :: _ :: line :: _ -> Blocks.chars_of_line line in
+      | _ :: _ :: line :: _ -> Blocks.chars_of_line line
+      | _ -> failwith "non"
+    in
       List.iter show chars
   end
