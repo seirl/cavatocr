@@ -45,4 +45,23 @@ of the new image like the one with these coordinates in the original image.
 
 ## Skew Detection
 
-Todo.
+Our recognition algorithm relies on the characters of a page being oriented
+correctly, for this reason detection and correction of any skew the page may
+have been scanned at is vital.
+
+There are several commonly used methods for detecting skew in a page, some rely
+on detecting connected components and finding the average angles connecting
+their centroids. The method we employed was to project the page at several
+angles, and determine the variance in the number of black pixels per projected
+line.
+
+The projetion parallel to the true alignment of the lines will likely have the
+the maximum variance ($\sum (n_i - average)$, since when parallel, each given
+ray projected through the image will hit either almost no black pixels (as it
+passes between text lines) or many black pixels (while passing through many
+characters in sequence).
+
+To be efficient, we first try every integer degree from -25° to 25°, and then
+we affinate the result with trying every tenth of degrees.
+
+The result is pretty impressive !
