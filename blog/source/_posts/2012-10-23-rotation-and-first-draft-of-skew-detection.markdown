@@ -56,10 +56,13 @@ angles, and determine the variance in the number of black pixels per projected
 line.
 
 The projetion parallel to the true alignment of the lines will likely have the
-the maximum variance ($\sum (n_i - average)$, since when parallel, each given
+the maximum variance, since when parallel, each given
 ray projected through the image will hit either almost no black pixels (as it
 passes between text lines) or many black pixels (while passing through many
-characters in sequence).
+characters in sequence):
+
+$$max({\sum_{n=0}^{N} (n_{\alpha} - \text{average}_{\alpha}) ~~ 
+\forall \alpha \in [\text{range}]})$$
 
 To be efficient, we first try every integer degree from -25° to 25°, and then
 we affinate the result with trying every tenth of degrees.
