@@ -1,3 +1,7 @@
+> *A team effort is a lot of people doing what I say.*
+
+> -- Michael Winner
+
 ## Antoine \``serialk`\` Pietri (pietri\_a)
 *Chef de groupe -- Consultant innovation des paradigmes open-sources*
 
@@ -24,4 +28,6 @@ trop s'emmerder pendant les week-ends.
 ## Thomas \``H2oWalker`\` Kostas (kostas\_t)
 
 *Consultant en management Big-data*
+
+
 
