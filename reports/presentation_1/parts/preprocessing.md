@@ -82,9 +82,6 @@ personne qui y a travaillé à le désir de proposer une meilleure solution de
 filtrage pour la prochaine soutenance, ses recherches sont en ce moment même
 principalement axés sur l'implémentation du filtre gaussien.
 
-%% ![Avant filtre médian](images/before_median.png)
-%% ![Après filtre médian](images/after_median.png)
-
 ### Binarisation de l'image
 
 La qualité de cette étape est essentielle pour la suite des opérations que va
