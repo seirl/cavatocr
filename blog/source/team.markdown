@@ -45,10 +45,13 @@ TODO
 
 <img style="float:left;margin-right:10px" src="http://i.imgur.com/81ujO.jpg" />
 
-## Thomas Kostas (kostas\_t)
+## Thomas \``H2oWalker`\` Kostas (kostas\_t)
 
-*Consultant*
+*Big Data managing consultant*
 
-TODO
-
-
+My name is Thomas Kostas, I’m 20 years old, I choosed to integrate Epita because
+computer science interest me since I'm 10 years old, I would describe myself as
+a creative person and I found in computer science a way to express my
+creativity. I like to understand how systems work, in this project I worked on
+the preprossessing of the image because it was achievable without having a good
+knowledge of SDL, but it use some interesting algorithms.
