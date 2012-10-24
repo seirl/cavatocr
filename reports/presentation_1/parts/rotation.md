@@ -9,11 +9,9 @@ Le membre en charge de cette partie du projet était Antoine Pietri
 
 Le but du projet est de récupérer le texte d'images scannées. Il est donc très
 probable que les images passées en entrée ne soient pas complètement droites.
-
 La détection des blocs et la reconnaissance de caractères se base sur le
 principe que l'image en entrée est parfaitement droite, ce qui est peu
 probable.
-
 Pour pallier ce problème, nous avons décidé de mettre en place un algorithme de
 détection d'angle et de rotation.
 
