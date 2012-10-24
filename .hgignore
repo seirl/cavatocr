@@ -21,4 +21,5 @@ source.old
 source/_stash
 source/stylesheets/screen.css
 vendor
+downloads
 node_modules
