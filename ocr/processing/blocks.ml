@@ -58,7 +58,7 @@ let lines_of_image (img:bool array array) =
             merge_per_line (y + 1)
               ((Array.append block_lines ([| line |])) :: accu_t)
   in
-    List.map
+    List.rev_map
       (fun mat -> rot_170 mat)
       (merge_per_line 0 [])
 
@@ -86,6 +86,6 @@ let chars_of_line (line:bool array array) =
             merge_per_col (x + 1)
               ((Array.append block_char ([| col |])) :: accu_t)
   in
-    merge_per_col 0 []
+    List.rev (merge_per_col 0 [])
 
 let chars_of_image img = List.map (chars_of_line) (lines_of_image img)
