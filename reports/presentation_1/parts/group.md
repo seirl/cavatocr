@@ -19,6 +19,13 @@ ne pas trop s'emmerder pendant les week-ends.
 
 *Consultant '_a*
 
+Paul aime les chats, si passionnément qu'il copie parfois leur comportement. Il
+est calme, patient, toujours disposé à aider ses amis, et si vous écoutez
+attentivement, vous pourriez l'entendre miauler ! De la musique et des
+mathématiques à l'administration système et réseau, il est toujours en quête de
+sa vocation dans le vaste monde de l'informatique. Son but avec ce projet et de
+permettre à son chat de lire à nouveau.
+
 
 ## Stéphane \``hibiscus`\` Lefebvre (lefebv\_k)
 
