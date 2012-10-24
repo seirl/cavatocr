@@ -14,7 +14,8 @@ ${LATEX}: ${REPORT}
 	pdflatex ${REPORT}
 
 clean:
-	rm *.aux
-	rm *.toc
-	rm *.pdf
-	rm *.log
+	rm -f *.aux
+	rm -f *.toc
+	rm -f *.pdf
+	rm -f *.log
+	rm -f $(addsuffix .tex,${PARTS})
