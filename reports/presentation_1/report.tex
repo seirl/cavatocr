@@ -15,7 +15,7 @@
 \begin{titlepage}
 \begin{center}
 \vspace{8cm}
-\includegraphics[width=15cm]{img/cavatocr.png}
+%%\includegraphics[width=15cm]{img/cavatocr.png}
 \vspace{0.5cm}
 
 \LARGE{\textbf{\subtitle}}
@@ -41,9 +41,23 @@ Cette page est laissée intentionnellement vide.
 
 \newpage
 \pagestyle{headings}
-
 \section{Introduction}
 \input{parts/introduction}
+
+\newpage
+\section{Présentation du projet}
+\input{parts/project}
+
+\newpage
+\section{Répartition des tâches}
+\subsection{Filtres de pré-traitement de l'image}
+\input{parts/preprocessing}
+\subsection{Détection de l'inclinaison et rotation}
+\input{parts/rotation}
+\subsection{Détection des blocs}
+\input{parts/blocks}
+\subsection{Interface graphique}
+\input{parts/gui}
 
 \newpage
 \section{Conclusion}
