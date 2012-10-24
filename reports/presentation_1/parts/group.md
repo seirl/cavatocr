@@ -22,12 +22,25 @@ trop s'emmerder pendant les week-ends.
 
 ## Stéphane \``hibiscus`\` Lefebvre (lefebv\_k)
 
-*Consultant*
+*Consultant de synergisation des utilisateurs innovants*
+
+Mercenaire de la liberté, fils de la rivière, c'est le paragon de la vertu et
+de l'harmonie ! Il aide occasionnellement les gens, car ils en ont besoin,
+rarement il coupe les arbres qui sont maléfiques, et souvent il brûle des
+choses car cela le divertit. Il est beau, tendre et espiègle. Si on devait le
+décrire par une couleur, cela serait "arc en ciel" car il a un coeur gros comme
+ça. Il a de nombreuses maladies sexuellement transmissibles, car il va un peu
+trop souvent chez les péripateticiennes.
 
 
 ## Thomas \``H2oWalker`\` Kostas (kostas\_t)
 
 *Consultant en management Big-data*
 
-
+Thomas Kostas est âgé de 20 ans. Il a fait le choix d'intégrer EPITA car il
+s'intéresse à l'informatique depuis son plus jeune âge, c'est une personne
+créative qui a trouvé dans l'informatique un moyen d'expression. Il aime
+comprendre les principes algorithmiques des choses. Dans ce projet il s'est
+chargé du prétraitement de l'image car cette tâche semblait algorithmiquement
+interressante et ne nécessitait pas de grandes connaissances concernant SDL.
 
