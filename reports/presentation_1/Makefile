@@ -1,4 +1,5 @@
 REPORT := report.tex
+PLAN := plan
 PARTS := $(basename $(wildcard parts/*))
 MD := md
 LATEX := latex
@@ -12,6 +13,9 @@ ${MD}: $(addsuffix .md,${PARTS})
 
 ${LATEX}: ${REPORT}
 	pdflatex ${REPORT}
+
+plan:
+	pandoc -o ${PLAN}.pdf ${PLAN}.md
 
 clean:
 	rm -f *.aux
