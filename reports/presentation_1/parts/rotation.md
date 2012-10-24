@@ -1,4 +1,9 @@
-*Le membre en charge de cette partie du projet était Antoine Pietri*
+Le membre en charge de cette partie du projet était Antoine Pietri
+
+> *A good rotation. A rotation I define as the experiencing of the new beyond
+> the expectation of the experiencing of the new.*
+
+> -- Walker Percy
 
 \vspace{0.5cm}
 

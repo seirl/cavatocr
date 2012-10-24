@@ -1,4 +1,10 @@
-*Le membre en charge de cette partie était Thomas Kostas*
+Le membre en charge de cette partie était Thomas Kostas
+
+> *Boredom is not an end-product, is comparatively rather an early stage in life
+> and art. You've got to go by or past or through boredom, as through a filter,
+> before the clear product emerges.*
+
+> -- F. Scott Fitzgerald
 
 ### Chargement de l'image
 

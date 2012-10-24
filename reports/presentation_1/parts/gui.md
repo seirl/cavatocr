@@ -1,4 +1,9 @@
-*Le membre en charge de cette partie était Stéphane Lefebvre.*
+Le membre en charge de cette partie était Stéphane Lefebvre.
+
+> *I think the major good idea in Unix was its clean and simple interface: open,
+> close, read, and write.*
+
+> -- Ken Thompson
 
 ### Introduction
 L'interface est le lien entre les fonctions de traitements et d'extraction et

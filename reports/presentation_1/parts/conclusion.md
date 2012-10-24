@@ -1,3 +1,7 @@
+> *A conclusion is the place where you got tired of thinking.*
+
+> - Steven Wright
+
 Ce projet n'est pas notre premier travail de groupe au sein d'EPITA, mais
 cependant il a su nous apporter une expérience différente. En effet le groupe
 est composé de membres aux connaissances hétérogènes, et cela nous a appris
