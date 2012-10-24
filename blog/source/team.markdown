@@ -26,11 +26,11 @@ political power, he plans to gardening, not to be bored during the week-ends.
 <img style="float:left;margin-right:10px" src="http://dettorer.net/cat_resized.jpg" />
 
 ## Paul \``Dettorer`\` Hervot (hervot\_p)
-*Block detection − '_a consultant*
+*'_a consultant*
 
-Paul loves cats, so passionately that he sometimes copy their behaviour. He is
-calm, patient, always disposed to help his friends and if you listen carefully,
-you can hear him meow ! From music and mathematics to systems and networks
+Paul loves cats so passionately that he sometimes copy their behaviour. He is
+calm, patient, always disposed to help his friends, and if you listen carefully,
+you can hear him meow! From music and mathematics to systems and networks
 administration, he still seeks his own vocation in the vast world of computer
 science. His goal with this project is to make his cat read again.
 
