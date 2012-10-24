@@ -23,14 +23,16 @@ realisation of his CavatOCR project. Once he'd have reached the very top
 political power, he plans to gardening, not to be bored during the week-ends.
 
 
-<img style="float:left;margin-right:10px" src="http://i.imgur.com/kW9YE.jpg" />
+<img style="float:left;margin-right:10px" src="http://dettorer.net/cat_resized.jpg" />
 
 ## Paul \``Dettorer`\` Hervot (hervot\_p)
+*Block detection − '_a consultant*
 
-*Consultant*
-
-TODO
-
+Paul loves cats, so passionately that he sometimes copy their behaviour. He is
+calm, patient, always disposed to help his friends and if you listen carefully,
+you can hear him meow ! From music and mathematics to systems and networks
+administration, he still seeks his own vocation in the vast world of computer
+science. His goal with this project is to make his cat read again.
 
 <img style="float:left;margin-right:10px" src="http://i.imgur.com/dZuWQ.png" />
 
