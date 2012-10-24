@@ -38,10 +38,14 @@ science. His goal with this project is to make his cat read again.
 
 ## Stéphane \``hibiscus`\` Lefebvre (lefebv\_k)
 
-*Consultant*
+*Synergizing innovative users consultant*
 
-TODO
-
+Mercenary of freedom, son of the nature, he is the paragon of virutes and
+harmony! Sometimes he can help peoples, because they need it, sometimes he chop
+trees, beause they root were rotten, sometimes he set fire to the crop, just
+for fun. He is beautiful, sweet and mischievous, if there were a color to
+caracterise him, it would be rainbow, because he has an hearth big like that.
+He often goes to prostitues.
 
 <img style="float:left;margin-right:10px" src="http://i.imgur.com/81ujO.jpg" />
 
