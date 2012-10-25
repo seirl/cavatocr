@@ -21,3 +21,5 @@ partitions, you can add one to a partition, and it will naturally take all the
 place it can takes, and you can also modify these base to create and develop
 everything that you can put in and create the surface of the interfaces.
 
+![Draft of GUI](http://i.imgur.com/ECVeR.png)
+
