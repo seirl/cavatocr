@@ -60,7 +60,7 @@ class Checker():
         except:
             return
         nb_commits = last_commits['limit']
-        lc = self.get_last_commits(user, repo)['changesets'][nb_commits - 1]
+        lc = last_commits['changesets'][nb_commits - 1]
         if not rid in self.bot.last_commits:
             self.bot.last_commits[rid] = lc
             return
