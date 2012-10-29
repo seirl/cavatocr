@@ -105,6 +105,10 @@ class Bot(IRC):
             self.message(r['channel'], rdc('hello'))
         self.ready = True
 
+    def on_disconnected():
+        self.connect(CONF['irc']['host'], CONF['irc']['port'])
+        self.ident(CONF['irc']['nick'])
+
     def on_channel_message(self, umask, channel, msg):
         msg = Tags.strip(msg)
         if msg[0] == '!':
