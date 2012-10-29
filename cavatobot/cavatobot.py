@@ -105,6 +105,10 @@ class Bot(IRC):
             self.message(r['channel'], rdc('hello'))
         self.ready = True
 
+    def on_server_kick(self, umask, channel, kicked_nick, reason=None):
+        if self.is_me(kicked_nick):
+            self.join(channel)
+
     def on_disconnected():
         self.connect(CONF['irc']['host'], CONF['irc']['port'])
         self.ident(CONF['irc']['nick'])
