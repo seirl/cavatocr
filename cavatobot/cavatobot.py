@@ -109,6 +109,7 @@ class Bot(IRC):
     def on_server_kick(self, umask, channel, kicked_nick, reason=None):
         if self.is_me(kicked_nick):
             self.join(channel)
+            self.message(channel, rdc('kick'))
 
     def on_disconnected():
         self.connect(CONF['irc']['host'], CONF['irc']['port'])
