@@ -9,18 +9,23 @@ import time
 import logging
 import json
 
+
 def load_conf():
     return yaml.load(open('conf.yml'))
 
-CONF = load_conf() 
+
+CONF = load_conf()
+
 
 def rdc(msg):
     return random.choice(CONF['msg'][msg])
+
 
 def shortenurl(url):
     url = 'http://ln-s.net/home/api.jsp?url={}'.format(url)
     r = requests.get(url).text
     return r.split()[1]
+
 
 def paste(text, hl='', ln=False, raw=False, comment='', user=''):
     data = {
@@ -28,14 +33,13 @@ def paste(text, hl='', ln=False, raw=False, comment='', user=''):
                 'hl': hl,
                 'user': user,
                 'comment': comment,
-                'ln': bool_switch(ln),
-                'raw': bool_switch(raw),
+                'ln': 'on' if ln else '',
+                'raw': 'on' if raw else '',
            }
-
     url = 'http://paste.awesom.eu/'
-    data = urllib.parse.urlencode(data).encode('utf-8')
-    r = urllib.request.urlopen(urllib.request.Request(url, data))
+    r = requests.post(url, data=data)
     return r.url
+
 
 class Checker():
     def __init__(self, bot):
@@ -46,7 +50,7 @@ class Checker():
         url = url.format(user, repo)
         js = requests.get(url).text
         return json.loads(js)
-    
+
     def run(self):
         if not self.bot.ready:
             return
@@ -79,6 +83,7 @@ class Checker():
         }
         self.bot.message(channel, rdc('commit').format(**params))
 
+
 class PeriodicalCall(threading.Thread):
     def __init__(self, delay, cls):
         super(PeriodicalCall, self).__init__()
@@ -91,6 +96,7 @@ class PeriodicalCall(threading.Thread):
         while self.running:
             self._cls.run()
             time.sleep(self._delay)
+
 
 class Bot(IRC):
     def __init__(self):
@@ -111,20 +117,17 @@ class Bot(IRC):
             self.join(channel)
             self.message(channel, rdc('kick'))
 
-    def on_disconnected():
+    def on_disconnected(self):
         self.connect(CONF['irc']['host'], CONF['irc']['port'])
         self.ident(CONF['irc']['nick'])
 
     def on_channel_message(self, umask, channel, msg):
         msg = Tags.strip(msg)
-        if msg[0] == '!':
-            splitted = msg.split()
-            command = splitted[0]
-            args = splitted[1:]
- 
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    
+
     bot = Bot()
     bot.connect(CONF['irc']['host'], CONF['irc']['port'])
     bot.ident(CONF['irc']['nick'])
@@ -133,5 +136,5 @@ if __name__ == '__main__':
     call = PeriodicalCall(CONF['bitbucket']['checkdelay'], checker)
     call.daemon = True
     call.start()
-   
+
     bot.run()
