@@ -1,8 +1,18 @@
 OCAML := ocamlbuild
 libs := sdlloader
 FLAGS := -use-ocamlfind -libs $(libs)
-DEPS := .,processing,image
 BUILD := native
+SYNTAX := python3 syntax.py
+
+DIRS := . processing image
+
+comma := ,
+space :=
+space +=
+DEPS := $(subst $(space),$(comma),$(DIRS))
+
+ML := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.ml,${dir})))
+MLI := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.mli,${dir})))
 
 .PHONY: all test clean gui
 
@@ -17,3 +27,7 @@ gui: interface/gui.ml
 
 clean:
 	$(OCAML) -Is ${DEPS} -clean
+
+syntax:
+	$(SYNTAX) $(ML)
+	$(SYNTAX) $(MLI)
