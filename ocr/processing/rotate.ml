@@ -13,11 +13,11 @@ let to_radians = function deg -> (deg *. pi) /. 180.
 let rotate mat angle =
   let (cos_a, sin_a) = (cos angle, sin angle) in
   let (w, h) = Matrix.get_dims mat in
-  let wo = int_of_float
+  let wo = truncate
              (float w *. (abs_float cos_a)
               +. float h *. (abs_float sin_a)) in
 
-  let ho = int_of_float
+  let ho = truncate
              (float h *. (abs_float cos_a)
               +. float w *. (abs_float sin_a)) in
 
@@ -26,11 +26,11 @@ let rotate mat angle =
   let (xo_center, yo_center) = (wo/2, ho/2) in
     for y=0 to ho - 1 do
       for x = 0 to wo - 1 do
-        let xo = int_of_float
+        let xo = truncate
                    (cos_a *. float (x - xo_center)
                     +. sin_a *. float (y - yo_center) +. float x_center) in
 
-        let yo = int_of_float
+        let yo = truncate
                    (-.sin_a *. float (x - xo_center)
                     +. cos_a *. float (y - yo_center) +. float y_center) in
 
@@ -63,7 +63,7 @@ let cast_ray mat row dx dy =
       en := !st +. dx;
       en := if !en > float w then float w else !en;
       bits := !bits + pixels_count
-                mat !row (abs (int_of_float !st)) (abs (int_of_float !en));
+                mat !row (abs (truncate !st)) (abs (truncate !en));
       st := !en;
       row := !row + dy
     done;
@@ -74,7 +74,7 @@ let histogram mat angle =
   let sample = 10 in
   let angle_diff = tan(angle) in
   let (h,w) = Matrix.get_dims mat in
-  let diff_y = - (int_of_float ((float w) *. angle_diff)) in
+  let diff_y = - (truncate ((float w) *. angle_diff)) in
   let (min_y, max_y) = (max 0 diff_y, min h (h + diff_y)) in
   let num_rows = (max_y - min_y) / sample + 1 in
   let dy = if angle < 0. then -1 else 1 in
@@ -128,8 +128,8 @@ let get_skew_angle mat =
           end;
     done;
     (* Second pass with tenth of degrees *)
-    for i = 10 * (int_of_float !angle_opt) - 10
-          to 10 * (int_of_float !angle_opt) + 10 do
+    for i = 10 * (truncate !angle_opt) - 10
+          to 10 * (truncate !angle_opt) + 10 do
       let angle = (float i) /. 10. in
       let hist = histogram_rotate mat (to_radians angle) in
         if hist > !hist_opt then

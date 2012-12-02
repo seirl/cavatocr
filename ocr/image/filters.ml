@@ -1,12 +1,12 @@
 (** Get the gray level of a color *)
 let level (r,g,b) =
-  (float_of_int(r) *. 0.3 +.
-   float_of_int(g) *.  0.59 +.
-   float_of_int(b) *. 0.11) /. 255.
+  (float(r) *. 0.3 +.
+   float(g) *.  0.59 +.
+   float(b) *. 0.11) /. 255.
 
 (** Recreates the color from its grey level *)
 let color2grey (r,g,b) =
-  let grey = int_of_float (level (r,g,b) *. 255.)
+  let grey = truncate (level (r,g,b) *. 255.)
   in (grey,grey,grey)
 
 (** Turns an image into greyscale *)

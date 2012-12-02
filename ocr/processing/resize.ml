@@ -5,8 +5,8 @@ let resize mat nw nh =
     let ratio_y = (float oh) /. (float nh) in
     for x = 0 to nw - 1 do 
         for y = 0 to nh - 1 do
-            let ox = int_of_float (ratio_x *. float x) in
-            let oy = int_of_float (ratio_y *.float y) in
+            let ox = truncate (ratio_x *. float x) in
+            let oy = truncate (ratio_y *.float y) in
             if ox >= 0 && ox < ow && oy >= 0 && oy < oh then
                 mat2.(x).(y) <- mat.(ox).(oy);
         done
