@@ -38,7 +38,7 @@ let create_surface w h =
     ~rmask:Int32.zero
     ~gmask:Int32.zero
     ~bmask:Int32.zero
-    ~amask:Int32.zero 
+    ~amask:Int32.zero
 
 (** Get a display surface *)
 let display w h = Sdlvideo.set_video_mode w h [`DOUBLEBUF]
