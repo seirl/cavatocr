@@ -14,7 +14,9 @@ DEPS := $(subst $(space),$(comma),$(DIRS))
 ML := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.ml,${dir})))
 MLI := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.mli,${dir})))
 
-.PHONY: all test clean gui
+URL_IMAGES := http://infoprepa.epita.fr/ImagesOCR/
+
+.PHONY: all test clean gui syntax get_images
 
 all: main.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
@@ -31,3 +33,8 @@ clean:
 syntax:
 	$(SYNTAX) $(ML)
 	$(SYNTAX) $(MLI)
+
+get_images:
+	mkdir -p test_images
+	wget -r -A.jpg -nH -np -nd -P test_images $(URL_IMAGES)
+	
