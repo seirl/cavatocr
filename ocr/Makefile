@@ -36,5 +36,5 @@ syntax:
 
 get_images:
 	mkdir -p test_images
-	wget -r -A.jpg -nH -np -nd -P test_images $(URL_IMAGES)
+	wget -r -c -A.jpg -nH -np -nd -nv -P test_images $(URL_IMAGES)
 	
