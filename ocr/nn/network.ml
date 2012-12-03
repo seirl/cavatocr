@@ -14,4 +14,13 @@ object (self)
       | n -> weights.(x).(y) /. (float count_learn)
 
   method learn mat =
-    assert false
+    for i = 0 to length - 1 do
+      for j = 0 to length - 1 do
+        begin
+          if mat.(i).(j) = 1 then
+            (weights.(i).(j) <- (weights.(i).(j) +. 1.0))
+        end
+      done
+    done
+    nb_learned <- nb_learned + 1
+end

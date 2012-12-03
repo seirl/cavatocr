@@ -31,10 +31,14 @@ clean:
 	$(OCAML) -Is ${DEPS} -clean
 
 syntax:
-	$(SYNTAX) $(ML)
-	$(SYNTAX) $(MLI)
+	$(SYNTAX) $(ML) $(MLI)
 
 get_images:
 	mkdir -p test_images
 	wget -r -c -A.jpg -nH -np -nd -nv -P test_images $(URL_IMAGES)
+
+doc:
+	$(OCAML) $(FLAGS) -Is ${DEPS} ocr.docdir/index.html
+	scp -r ocr.docdir/* root@serialk.fr\:/srv/http/cavatocr/doc/
+	$(MAKE) clean
 	
