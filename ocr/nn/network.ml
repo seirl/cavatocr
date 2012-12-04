@@ -1,6 +1,6 @@
 let (w_char, h_char) = (16, 10)
 
-class neuron_layer1 =
+class neuron =
 object (self)
   val weights = Matrix.make w_char h_char 0
   val mutable sigma:int = 0
@@ -24,7 +24,7 @@ object (self)
       !r - sigma
 
   method output v =
-    if v > 0 then 1 else 0 (* int_of_bool, r u there?? *)
+    Tools.int_of_bool (v > 0)
 
   method eval mat =
     self#output (self#inputs mat)
@@ -45,13 +45,33 @@ object (self)
     self#new_weights mat error
 end
 
-(*
-class network (chars:string) (size:int) =
+class network (chars:string) =
 object (self)
-  val mutable neurons = Hashtbl.create size
+  val mutable neurons = Hashtbl.create (String.length chars)
   initializer
     for a = 0 to (String.length chars) - 1 do
       Hashtbl.add neurons chars.[a] (new neuron)
     done
+
+  method train_neuron ch mat expected =
+    let neuron = Hashtbl.find neurons ch in
+      neuron#fix mat expected
+
+  method train_all mat expected_char =
+    let iter_train ch neuron =
+      self#train_neuron ch mat (Tools.int_of_bool (ch = expected_char))
+    in
+      Hashtbl.iter iter_train neurons
+
+  method recognize mat =
+    let a = ref 0 in
+    let found_ch = ref None in
+    while (!found_ch = None && !a <= (String.length chars) - 1) do
+      let ch = chars.[!a] in
+      let neuron = Hashtbl.find neurons ch in
+        if neuron#eval mat > 0 then
+          found_ch := Some(ch)
+    done;
+    !found_ch
 end
-*)
+

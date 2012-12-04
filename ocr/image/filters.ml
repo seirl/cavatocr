@@ -67,7 +67,7 @@ let clean_bin image_grey =
 let edge image_bin =
   let(w, h) = Matrix.get_dims image_bin in
   let image_edge = Matrix.make w h false
-  and iob = Matrix.int_of_bool in
+  and iob = Tools.int_of_bool in
     begin
       for x = 1 to w - 2 do
         for y = 1 to h - 2 do
