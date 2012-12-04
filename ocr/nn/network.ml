@@ -1,13 +1,10 @@
 let (w_char, h_char) = (16, 10)
 
-class neuron (id:int) =
+class neuron =
 object (self)
-  val mutable weights = Matrix.make w_char h_char 0.0
-  val mutable count_learn = 0
+  val weights = Matrix.make w_char h_char 0.0
 
-  method get_id = id
   method get_weight x y = weights.(x).(y)
-  method get_count_learn = count_learn
 
   method rand_weights =
     for i = 0 to w_char - 1 do
@@ -15,11 +12,6 @@ object (self)
             weights.(i).(j) <- (Random.float 11.) -. 5.
       done
     done
-
-  method rate x y =
-    match count_learn with
-      | 0 -> infinity
-      | n -> weights.(x).(y) /. (float count_learn)
 
   method correct mat error =
     for i = 0 to w_char - 1 do
