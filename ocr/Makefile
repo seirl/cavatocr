@@ -4,7 +4,7 @@ FLAGS := -use-ocamlfind -libs $(libs)
 BUILD := native
 SYNTAX := python3 syntax.py
 
-DIRS := . processing image
+DIRS := . processing image nn
 
 comma := ,
 space :=
