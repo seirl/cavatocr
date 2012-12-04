@@ -41,10 +41,11 @@ object (self)
     sigma <- sigma - error
 
   method fix mat expected =
-    let error = expected - (eval mat) in
+    let error = expected - (self#eval mat) in
     self#new_weights mat error
 end
 
+(*
 class network (chars:string) (size:int) =
 object (self)
   val mutable neurons = Hashtbl.create size
@@ -53,3 +54,4 @@ object (self)
       Hashtbl.add neurons chars.[a] (new neuron)
     done
 end
+*)
