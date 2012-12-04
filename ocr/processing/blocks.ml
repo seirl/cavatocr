@@ -1,7 +1,7 @@
 (** This module can detect blocks of text and extract all characters from an
     image.
     In this module, the term "image" refer to a bool array array (the binary
-    matrix representation of an image *)
+    matrix representation of an image) *)
 
 let bool_sum = Array.fold_left (fun n b -> if b then n+1 else n) 0
 
