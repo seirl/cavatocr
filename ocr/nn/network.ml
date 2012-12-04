@@ -1,10 +1,11 @@
-let (w_char, h_char) = (16, 10)
+let (w_char, h_char) = (5, 5)
 
 class neuron =
 object (self)
   val weights = Matrix.make w_char h_char 0
   val mutable sigma:int = 0
   method get_weight x y = weights.(x).(y)
+  method get_weights = weights
 
   initializer
     for i = 0 to w_char - 1 do
@@ -53,6 +54,8 @@ object (self)
       Hashtbl.add neurons chars.[a] (new neuron)
     done
 
+  method get_neurons = neurons
+
   method train_neuron ch mat expected =
     let neuron = Hashtbl.find neurons ch in
       neuron#fix mat expected
@@ -66,11 +69,16 @@ object (self)
   method recognize mat =
     let a = ref 0 in
     let found_ch = ref None in
-    while (!found_ch = None && !a <= (String.length chars) - 1) do
+    let m = ref 0 in
+    while !a <= (String.length chars) - 1 do
       let ch = chars.[!a] in
       let neuron = Hashtbl.find neurons ch in
-        if neuron#eval mat > 0 then
-          found_ch := Some(ch)
+      let i = neuron#inputs mat in
+        if i > !m then
+          begin
+            found_ch := Some(ch);
+            m := i
+          end
     done;
     !found_ch
 end

@@ -10,3 +10,11 @@ let print_matrix mat =
     done;
     Printf.printf "\n";
   done
+
+let print_int_matrix mat =
+  for r = 0 to (nbrows mat) - 1 do
+    for c = 0 to (nbcols mat) - 1 do
+      Printf.printf "%2d " mat.(r).(c);
+    done;
+    Printf.printf "\n";
+  done
