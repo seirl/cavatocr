@@ -118,7 +118,11 @@ class Bot(IRC):
             self.message(channel, rdc('kick'))
 
     def on_disconnected(self):
-        self.connect(CONF['irc']['host'], CONF['irc']['port'])
+        try:
+            self.connect(CONF['irc']['host'], CONF['irc']['port'])
+        except:
+            time.sleep(10)
+            self.on_disconnected()
         self.ident(CONF['irc']['nick'])
 
     def on_channel_message(self, umask, channel, msg):
