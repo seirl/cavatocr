@@ -74,6 +74,7 @@ let cast_ray mat row dx dy =
 
 (** Get the chance of an angle to be the right orientation of the text *)
 let histogram mat angle =
+  let angle = -. angle in
   let sample = 10 in
   let angle_diff = tan(angle) in
   let (w,h) = Matrix.get_dims mat in
@@ -142,7 +143,7 @@ let get_skew_angle mat =
             angle_opt := angle;
           end
     done;
-    -.(to_radians !angle_opt)
+    to_radians !angle_opt
 
 
 
@@ -172,6 +173,7 @@ let trace_ray mat row dx dy =
 
 (** Traces the histogram of the matrix within the given angle *)
 let trace_histogram mat angle =
+  let angle = -. angle in
   let mat = Matrix.copy mat in
   let sample = 10 in
   let angle_diff = tan(angle) in
