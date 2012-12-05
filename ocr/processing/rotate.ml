@@ -73,7 +73,7 @@ let cast_ray mat row dx dy =
 let histogram mat angle =
   let sample = 10 in
   let angle_diff = tan(angle) in
-  let (h,w) = Matrix.get_dims mat in
+  let (w,h) = Matrix.get_dims mat in
   let diff_y = - (truncate ((float w) *. angle_diff)) in
   let (min_y, max_y) = (max 0 diff_y, min h (h + diff_y)) in
   let num_rows = (max_y - min_y) / sample + 1 in
@@ -120,7 +120,7 @@ let get_skew_angle mat =
     (* First approximation with integer degrees *)
     for i = -25 to 25 do
       let angle = (float i) in
-      let hist = histogram_rotate mat (to_radians angle) in
+      let hist = histogram mat (to_radians angle) in
         if hist > !hist_opt then
           begin
             hist_opt := hist;
@@ -131,7 +131,7 @@ let get_skew_angle mat =
     for i = 10 * (truncate !angle_opt) - 10
           to 10 * (truncate !angle_opt) + 10 do
       let angle = (float i) /. 10. in
-      let hist = histogram_rotate mat (to_radians angle) in
+      let hist = histogram mat (to_radians angle) in
         if hist > !hist_opt then
           begin
             hist_opt := hist;

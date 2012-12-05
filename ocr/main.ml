@@ -27,9 +27,7 @@ let _ =
     *)
 
     let rotated = Rotate.rotate bin (Rotate.get_skew_angle bin) in
-    (*
       show rotated;
-    *)
 
     let lines = Blocks.chars_of_image rotated in
       (* List.iter show lines; *)
