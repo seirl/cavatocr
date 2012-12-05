@@ -141,6 +141,9 @@ let chars_of_line (line:bool array array) =
 let words_of_image img = List.map (words_of_line) (lines_of_image img)
 let chars_of_image img = List.map (List.map chars_of_line) (words_of_image img)
 
+(** Map function for element of a bool array array list list list *)
+let map_extracted f = List.map (List.map (List.map f))
+
 (* }}} *)
 
 (* {{{ new method *)
@@ -238,13 +241,67 @@ let get_lines (block:t_block) =
                img=add_row line (get_line i (block.img))
               }
     done;
+    List.iter (fun block -> block.img <- rot_170 block.img) !lines;
     !lines
   end
 
-let extract_lines img = List.map (fun {l=_;r=_;t=_;b=_;img=i} -> rot_170 i) (get_lines (block_of_img img))
 
-let extract img = ()
+(** Cut a an image into lines of text *)
+let get_chars (block:t_block) =
+  begin
+    let w = (block.r) - (block.l) in
+    let chars = ref [] in
+    let current_char = ref sample_block in
+    let threshold = 1 in
+    let in_char = ref false in
+    let hhist = horizontal_hist (block.img) in
+
+    for i=0 to w-1 do
+      if not !in_char
+      then
+        if hhist.(i) <= threshold
+        (* we are between two characters *)
+        then ()
+        else
+        (* new character *)
+          begin
+          in_char := true;
+          current_char :=
+             { l=block.l + i; r=block.r + i;
+               t=block.t; b=block.t;
+               img=[| block.img.(i) |]
+             }
+          end
+
+      else if hhist.(i) <= threshold
+      (* end of a line *)
+      then
+        begin
+          in_char := false;
+          chars := !current_char :: !chars;
+          current_char := sample_block
+        end
+      else
+      (* new row in a line *)
+        match !current_char with
+          | ({l=l;r=r;t=t;b=b;img=c}) ->
+              current_char :=
+              {l=l;r=r+1;t=t;b=b;
+               img=add_row c (block.img.(i))
+              }
+    done;
+    List.rev !chars
+  end
+
+
+let extract_lines img = List.map (fun {l=_;r=_;t=_;b=_;img=i} -> i) (get_lines (block_of_img img))
+
+let extract img = List.map (List.map (fun {l=_;r=_;t=_;b=_;img=i} -> i)) (List.map get_chars (get_lines (block_of_img img)))
 
 (* }}} *)
+
+(* Note : pour la détection des mots / colonnes etc : faire un histogramme de la
+ * taille des espaces entre caractères puis remarquer que les pics ont trois
+ * tailles *)
 
 (* vim: set fdm=marker: *)
