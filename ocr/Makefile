@@ -17,7 +17,7 @@ MLI := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.mli,${dir})))
 URL_IMAGES := http://infoprepa.epita.fr/ImagesOCR/
 RSYNC := rsync --rsh='ssh' -vPtz
 
-.PHONY: all test clean gui syntax get_images
+.PHONY: all test clean gui syntax get_images doc
 
 all: main.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
