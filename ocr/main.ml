@@ -20,20 +20,19 @@ let _ =
 
     let bin = Filters.binarize grey in
       show bin;
-
+    (*
     let edge = Filters.edge bin in
       show edge;
       show bin;
+    *)
 
     let rotated = Rotate.rotate bin (Rotate.get_skew_angle bin) in
+    (*
       show rotated;
+    *)
 
-    let lines = Blocks.lines_of_image rotated in
-      List.iter show lines;
+    let lines = Blocks.chars_of_image rotated in
+      (* List.iter show lines; *)
 
-    let chars = match lines with
-      | _ :: _ :: line :: _ -> Blocks.chars_of_line line
-      | _ -> failwith "non"
-    in
-      List.iter show chars
+      List.iter (List.iter (List.iter show)) lines
   end
