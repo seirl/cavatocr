@@ -39,6 +39,8 @@ get_images:
 
 doc:
 	$(OCAML) $(FLAGS) -Is ${DEPS} ocr.docdir/index.html
+	sed 's/White/transparent/' ocr.docdir/style.css > ocr.docdir/style.tmp
+	mv ocr.docdir/style.tmp ocr.docdir/style.css
 	scp -r ocr.docdir/* root@serialk.fr\:/srv/http/cavatocr/doc/
 	$(MAKE) clean
 	
