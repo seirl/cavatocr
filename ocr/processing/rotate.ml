@@ -1,7 +1,7 @@
 (** This module can detect the skew angle of an image and rotate it *)
 
 (** π *)
-let pi = 3.14159
+let pi = 3.14159265
 
 (** Convert a radian angle into a degree angle *)
 let to_degrees = function rad -> (rad *. 180.) /. pi
@@ -45,10 +45,13 @@ let rotate mat angle =
 
 (** Count the pixels of the given row from start to end *)
 let pixels_count mat row st en =
+  let (w,h) = Matrix.get_dims mat in
   let count = ref 0 in
     for i = st to (en - 1) do
-      count := !count + if mat.(i).(row) then 1 else 0;
-      mat.(i).(row) <- true;
+      if 0 <= i && i < w && 0 <= row && row < h then
+        begin
+          count := !count + if mat.(i).(row) then 1 else 0;
+        end
     done;
     !count
 
@@ -59,11 +62,11 @@ let cast_ray mat row dx dy =
   let st = ref 0. in
   let en = ref 0. in
   let (w,h) = Matrix.get_dims mat in
-    while !st < float w || !row < 0 || !row > h do
+    while !st < float w && not (!row < 0 || !row > h) do
       en := !st +. dx;
       en := if !en > float w then float w else !en;
       bits := !bits + pixels_count
-                mat !row (abs (truncate !st)) (abs (truncate !en));
+                        mat !row (abs (truncate !st)) (abs (truncate !en));
       st := !en;
       row := !row + dy
     done;
@@ -74,29 +77,30 @@ let histogram mat angle =
   let sample = 10 in
   let angle_diff = tan(angle) in
   let (w,h) = Matrix.get_dims mat in
-  let diff_y = - (truncate ((float w) *. angle_diff)) in
-  let (min_y, max_y) = (max 0 diff_y, min h (h + diff_y)) in
+  let diff_y = -(truncate ((float w) *. angle_diff)) in
+  let min_y = max 0 diff_y in
+  let max_y = min h (h + diff_y) in
   let num_rows = (max_y - min_y) / sample + 1 in
   let dy = if angle < 0. then -1 else 1 in
   let dx = (float dy) /. angle_diff in
-    Printf.printf
-      "a=%f\nangle_diff=%f\nw h=%d %d\ndiff_y=%d\nmin_y max_y=%d\
-      \ %d\nnum_rows=%d\ndx dy=%f %d\n"
-      angle angle_diff w h diff_y min_y max_y num_rows dx dy;
-    let rows = Array.make num_rows 0 in
-      for i = 0 to num_rows - 1 do
-        rows.(i) <- cast_ray mat (min_y + i * sample) dx dy;
-      done;
-      let moy = (Array.fold_left (+) 0 rows) / num_rows in
-      let sum = ref 0 in
-      let sqr x = x * x in
+    if num_rows < 8 then
+      0.
+    else
+      let rows = Array.make num_rows 0 in
         for i = 0 to num_rows - 1 do
-          sum := !sum + sqr (rows.(i) - moy)
+          rows.(i) <- cast_ray mat (min_y + i * sample) dx dy;
         done;
-        (float !sum) /. (float moy)
+        let moy = (Array.fold_left (+) 0 rows) / num_rows in
+        let sum = ref 0 in
+        let sqr x = x * x in
+          for i = 0 to num_rows - 1 do
+            sum := !sum + sqr (rows.(i) - moy)
+          done;
+          (float !sum) /. (float moy)
 
-(** Get the chance of an angle to be the right orientation of the text
-  * This version performs a full rotation of the picture for each angle *)
+(** Get the chance of an angle to be the right orientation of the text.
+  This version performs a full rotation of the picture for each angle.
+  Don't use this. *)
 let histogram_rotate mat angle =
   let sample = 10 in
   let rotated_mat = rotate mat angle in
@@ -105,13 +109,13 @@ let histogram_rotate mat angle =
     for i = 0 to h / sample - 1  do
       rows.(i) <- pixels_count rotated_mat (i * sample) 0 w
     done;
-  let moy = (Array.fold_left (+) 0 rows) / h in
-  let sum = ref 0 in
-  let sqr x = x * x in
-    for i = 0 to h / sample -1 do
-      sum := !sum + sqr (rows.(i) - moy)
-    done;
-  float !sum /. (float moy)
+    let moy = (Array.fold_left (+) 0 rows) / h in
+    let sum = ref 0 in
+    let sqr x = x * x in
+      for i = 0 to h / sample -1 do
+        sum := !sum + sqr (rows.(i) - moy)
+      done;
+      float !sum /. (float moy)
 
 (** Get the skew angle of the image matrix *)
 let get_skew_angle mat =
@@ -129,7 +133,7 @@ let get_skew_angle mat =
     done;
     (* Second pass with tenth of degrees *)
     for i = 10 * (truncate !angle_opt) - 10
-          to 10 * (truncate !angle_opt) + 10 do
+                                           to 10 * (truncate !angle_opt) + 10 do
       let angle = (float i) /. 10. in
       let hist = histogram mat (to_radians angle) in
         if hist > !hist_opt then
@@ -138,6 +142,51 @@ let get_skew_angle mat =
             angle_opt := angle;
           end
     done;
-    (to_radians !angle_opt)
+    -.(to_radians !angle_opt)
+
+
+
+(** Set to black the pixels of the given row from start to end *)
+let trace_pixels mat row st en =
+  let (w,h) = Matrix.get_dims mat in
+    for i = st to (en - 1) do
+      if 0 <= i && i < w && 0 <= row && row < h then
+        begin
+          mat.(i).(row) <- true;
+        end
+    done
+
+(** Traces a ray through the matrix with the given variations of coordinates *)
+let trace_ray mat row dx dy =
+  let row = ref row in
+  let st = ref 0. in
+  let en = ref 0. in
+  let (w,h) = Matrix.get_dims mat in
+    while !st < float w && not (!row < 0 || !row > h) do
+      en := !st +. dx;
+      en := if !en > float w then float w else !en;
+      trace_pixels mat !row (abs (truncate !st)) (abs (truncate !en));
+      st := !en;
+      row := !row + dy
+    done
+
+(** Traces the histogram of the matrix within the given angle *)
+let trace_histogram mat angle =
+  let mat = Matrix.copy mat in
+  let sample = 10 in
+  let angle_diff = tan(angle) in
+  let (w,h) = Matrix.get_dims mat in
+  let diff_y = -(truncate ((float w) *. angle_diff)) in
+  let min_y = max 0 diff_y in
+  let max_y = if min_y = 0 then h else h + diff_y in
+  let num_rows = (max_y - min_y) / sample + 1 in
+  let dy = if angle < 0. then -1 else 1 in
+  let dx = (float dy) /. angle_diff in
+    for i = 0 to num_rows - 1 do
+      trace_ray mat (min_y + i * sample) dx dy
+    done;
+    mat
+
+
 
 

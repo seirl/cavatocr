@@ -25,12 +25,19 @@ let _ =
       show edge;
       show bin;
     *)
-
+    (*for i = -25 to 25 do
+    Rotate.trace_histogram bin (Rotate.to_radians (float i));
+    show bin;
+    done;
+    show bin;*)
+    let angle = Rotate.get_skew_angle bin in
     let rotated = Rotate.rotate bin (Rotate.get_skew_angle bin) in
       show rotated;
+      show (Rotate.trace_histogram bin angle);
 
-    let lines = Blocks.chars_of_image rotated in
-      (* List.iter show lines; *)
+    (* let lines = Blocks.chars_of_image bin in
+      List.iter show lines;
+      List.iter (List.iter (List.iter show)) lines*)
 
-      List.iter (List.iter (List.iter show)) lines
+      ()
   end

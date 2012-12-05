@@ -18,3 +18,12 @@ let print_int_matrix mat =
     done;
     Printf.printf "\n";
   done
+
+let copy m =
+  let l = Array.length m in
+    if l = 0 then m else
+      let result = Array.make l m.(0) in
+        for i = 0 to l - 1 do
+           result.(i) <- Array.copy m.(i)
+        done;
+        result
