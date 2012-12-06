@@ -28,6 +28,3 @@ let local_moy mat div_w div_h =
         moymat.(i).(j) <- (float !sum) /. (float (part_w * part_h))
       done
     done
-      
-
-
