@@ -2,7 +2,7 @@ let _ =
   begin
     Image.sdl_init ();
     let show img =
-      let display = Image.display_for_image img in
+      let display = Image.display_for_matrix (img:bool array array) in
         begin
           Image.show_matrix img display;
           Image.wait_key ();
@@ -11,15 +11,18 @@ let _ =
 
     let img = (Image.load Sys.argv.(1)) in
     let display = Image.display_for_image img in
-      Image.show_rgb_matrix img display;
-      Image.wait_key ();
+      Image.show img display;
+      Image.wait_key();
 
     let grey = Filters.image2grey img in
-      Image.show_rgb_matrix grey display;
-      Image.wait_key ();
+      Image.show img display;
+      Image.wait_key();
 
     let bin = Filters.binarize grey in
-      show bin;
+      Image.show img display;
+      Image.wait_key();
+
+
     (*
     let edge = Filters.edge bin in
       show edge;

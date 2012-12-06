@@ -16,12 +16,12 @@ let image2grey src =
     for y = 0 to h - 1 do
       for x = 0 to w - 1 do
         Sdlvideo.put_pixel_color dst x y
-          (color2grey (Sdlvideo.get_pixel_color src x y ))
+          (color2grey (Sdlvideo.get_pixel_color src x y))
       done;
     done;
     dst
 
-let fst (a,_,_) = a in
+let fst (a,_,_) = a
 
 (** median Filter *)
 let clean_bin image_grey =
@@ -43,7 +43,7 @@ let clean_bin image_grey =
 
           Array.fast_sort (-) table;
           let m = table.(4) in
-            Sdlvideo.set_pixel_color image_clean x y <- (m,m,m)
+            Sdlvideo.put_pixel_color image_clean x y (m,m,m)
         done;
       done;
       image_clean
@@ -95,109 +95,105 @@ let edge image_bin =
 
 
 
-    (* RLSA *)
+(* RLSA *)
 let rlsa mat = 
-        let (x,y) = Matrix.get_dims mat in
-        let rlsaMat = Array.make_matrix x y in
-       begin 
-              for yi=1 to y-2 do
-                for xi=1 to x-2 do
-                  if mat.(xi).(yi) = true then (*noir*)
-                       rlsaMat.(xi).(yi) <- true
-                  else
-                       if (   Tools.int_of_bool(mat.(xi-1).(yi-1))
-                               +
-                              Tools.int_of_bool(mat.(xi).(yi-1)) 
-                               +
-                              Tools.int_of_bool(mat.(xi+1).(yi-1))
-                               + 
-                              Tools.int_of_bool(mat.(xi-1).(yi))
-                               + 
-                              Tools.int_of_bool(mat.(xi+1).(yi))
-                               +
-                              Tools.int_of_bool(mat.(xi-1).(yi+1))
-                               +
-                              Tools.int_of_bool(mat.(xi).(yi+1))
-                               +
-                              Tools.int_of_bool(mat.(xi+1).(yi+1)) 
-                           ) >= 4 then
-                                       rlsaMat.(xi).(yi) <- true
-                       else
-                               rlsaMat.(xi).(yi) <- false
-                done;
-              done;
-              rlsaMat
-       end
+  let (x,y) = Matrix.get_dims mat in
+  let rlsaMat = Array.make_matrix x y false in
+    begin 
+      for yi=1 to y-2 do
+        for xi=1 to x-2 do
+          if mat.(xi).(yi) = true then (*noir*)
+            rlsaMat.(xi).(yi) <- true
+          else
+              if (   Tools.int_of_bool(mat.(xi-1).(yi-1))
+                     +
+                     Tools.int_of_bool(mat.(xi).(yi-1)) 
+                     +
+                     Tools.int_of_bool(mat.(xi+1).(yi-1))
+                     + 
+                     Tools.int_of_bool(mat.(xi-1).(yi))
+                     + 
+                     Tools.int_of_bool(mat.(xi+1).(yi))
+                     +
+                     Tools.int_of_bool(mat.(xi-1).(yi+1))
+                     +
+                     Tools.int_of_bool(mat.(xi).(yi+1))
+                     +
+                     Tools.int_of_bool(mat.(xi+1).(yi+1)) 
+              ) >= 4 then
+                rlsaMat.(xi).(yi) <- true
+              else
+                rlsaMat.(xi).(yi) <- false
+        done;
+      done;
+      rlsaMat
+    end
 (** Image binV2 *)
 
 let ecartype imageBw x y = 
   let s x = x*x in
   let sf x  = x *. x in
- sqrt(
-                (1. /. 9. *.
-               float(
-                 s(fst(Sdlvideo.get_pixel_color imageBw x y))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw (x-1) (y-1)))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw  x (y-1)))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw (x+1) (y-1)))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw (x-1) (y)))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw (x+1) (y)))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw (x-1) (y+1)))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw (x) (y+1)))
-              +  s(fst(Sdlvideo.get_pixel_color imageBw (x+1) (y+1)))
-                    )
-                )
-        -.
-             sf ( 1. /. 9. *. 
-                 float(
-                         fst(Sdlvideo.get_pixel_color imageBw x y)
-                       + fst(Sdlvideo.get_pixel_color imageBw (x-1) (y-1))
-                       + fst(Sdlvideo.get_pixel_color imageBw  x (y-1))
-                       + fst(Sdlvideo.get_pixel_color imageBw (x+1) (y-1))
-                       + fst(Sdlvideo.get_pixel_color imageBw (x-1) (y))
-                       + fst(Sdlvideo.get_pixel_color imageBw (x+1) (y))
-                       + fst(Sdlvideo.get_pixel_color imageBw (x-1) (y+1))
-                       + fst(Sdlvideo.get_pixel_color imageBw (x) (y+1))
-                       + fst(Sdlvideo.get_pixel_color imageBw (x+1) (y+1))
-                      )
-                )
- )
+    sqrt(
+      (1. /. 9. *.
+       float(
+         s(fst(Sdlvideo.get_pixel_color imageBw x y))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw (x-1) (y-1)))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw  x (y-1)))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw (x+1) (y-1)))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw (x-1) (y)))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw (x+1) (y)))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw (x-1) (y+1)))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw (x) (y+1)))
+         +  s(fst(Sdlvideo.get_pixel_color imageBw (x+1) (y+1)))
+       )
+      )
+      -.
+      sf ( 1. /. 9. *. 
+           float(
+             fst(Sdlvideo.get_pixel_color imageBw x y)
+             + fst(Sdlvideo.get_pixel_color imageBw (x-1) (y-1))
+             + fst(Sdlvideo.get_pixel_color imageBw  x (y-1))
+             + fst(Sdlvideo.get_pixel_color imageBw (x+1) (y-1))
+             + fst(Sdlvideo.get_pixel_color imageBw (x-1) (y))
+             + fst(Sdlvideo.get_pixel_color imageBw (x+1) (y))
+             + fst(Sdlvideo.get_pixel_color imageBw (x-1) (y+1))
+             + fst(Sdlvideo.get_pixel_color imageBw (x) (y+1))
+             + fst(Sdlvideo.get_pixel_color imageBw (x+1) (y+1))
+           )
+      )
+    )
 
-
-                  
 let moy  imageBw x y = 
-        ( fst(Sdlvideo.fstet_pixel_color imafsteBw x y)
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw (x-1) (y-1))
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw  x (y-1))
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw (x+1) (y-1))
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw (x-1) (y))
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw (x+1) (y))
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw (x-1) (y+1))
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw (x) (y+1))
-        + fst(Sdlvideo.fstet_pixel_color imafsteBw (x+1) (y+1)))/9
+  (fst (Sdlvideo.get_pixel_color imageBw x y) +
+   fst (Sdlvideo.get_pixel_color imageBw (x-1) (y-1)) +
+   fst (Sdlvideo.get_pixel_color imageBw x (y-1)) +
+   fst (Sdlvideo.get_pixel_color imageBw (x+1) (y-1)) +
+   fst (Sdlvideo.get_pixel_color imageBw (x-1) y) +
+   fst (Sdlvideo.get_pixel_color imageBw (x+1) y) +
+   fst (Sdlvideo.get_pixel_color imageBw (x-1) (y+1)) +
+   fst (Sdlvideo.get_pixel_color imageBw (x) (y+1)) +
+   fst (Sdlvideo.get_pixel_color imageBw (x+1) (y+1)))/9
 
 let fixseuil imageBw x y =
-                     int_of_float( 
-                             float((moy imageBw x y))
-                             *.
-                             (1. +. 0.2 *. ((ecartype immageBw x y) /. 128.) -. 1.)
-                                  )
-let binV2 imageBw =
-        let (w,h) = Image.get_dims imageBw in
-        let mat = array.make_matrix w h in
-     begin 
-       for y = 1 to h-2 do
-              for x = 1 to w-2 do 
-                      if  fst(Sdlvideo.get_pixel_color imageBw x y)
-                          <
-                          fixseuil(imageBw x y)
-                      then 
-                              mat.(x).(y) <- true (* NOIR *)
-                      else
-                              mat.(x).(y) <- false (* blanc *) 
-              done;
-       done;
-         
+  int_of_float( 
+    float((moy imageBw x y))
+    *.
+    (1. +. 0.2 *. ((ecartype imageBw x y) /. 128.) -. 1.)
+  )
+
+let binarize imageBw =
+  let (w,h) = Image.get_dims imageBw in
+  let mat = Matrix.make w h false in
+    begin 
+      for y = 1 to h-2 do
+        for x = 1 to w-2 do 
+          if fst(Sdlvideo.get_pixel_color imageBw x y) < fixseuil imageBw x y
+          then 
+            mat.(x).(y) <- true (* NOIR *)
+          else
+            mat.(x).(y) <- false (* blanc *) 
+        done;
+      done;
       mat 
     end
 

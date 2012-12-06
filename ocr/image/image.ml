@@ -35,8 +35,13 @@ let create_surface w h =
 let display w h = Sdlvideo.set_video_mode w h [`DOUBLEBUF]
 
 (** Same with the size of a given surface *)
-let display_for_image img =
+let display_for_matrix img =
   let w, h = Matrix.get_dims img in
+    display w h
+
+(** Same with the size of a given surface *)
+let display_for_image img =
+  let w, h = get_dims img in
     display w h
 
 (** Display a SDL surface on the dst display *)
