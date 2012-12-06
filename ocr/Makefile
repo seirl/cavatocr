@@ -1,7 +1,7 @@
 OCAML := ocamlbuild
 libs := sdlloader
-FLAGS := -use-ocamlfind -libs $(libs) -tag debug
-BUILD := byte
+FLAGS := -use-ocamlfind -libs $(libs)
+BUILD := native
 SYNTAX := python3 syntax.py
 
 DIRS := . processing image nn

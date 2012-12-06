@@ -14,13 +14,15 @@ let _ =
       Image.show img display;
       Image.wait_key();
 
-    let grey = Filters.image2grey img in
+      Filters.image2grey img;
       Image.show img display;
       Image.wait_key();
 
-    let bin = Filters.binarize grey in
-      Image.show img display;
-      Image.wait_key();
+    let mat = Filters.binarize img in
+      show mat;
+
+    let mat = Filters.rlsa mat in
+      show mat;
 
 
     (*
@@ -33,10 +35,10 @@ let _ =
     show bin;
     done;
     show bin;*)
-    let angle = Rotate.get_skew_angle bin in
-    let rotated = Rotate.rotate bin (Rotate.get_skew_angle bin) in
+    let angle = Rotate.get_skew_angle mat in
+    let rotated = Rotate.rotate mat angle in
       show rotated;
-      show (Rotate.trace_histogram bin angle);
+      show (Rotate.trace_histogram mat angle);
 
     (* let lines = Blocks.chars_of_image bin in
       List.iter show lines;
