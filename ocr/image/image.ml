@@ -13,16 +13,7 @@ let sdl_init () =
   end
 
 (** Load an image as a matrix of three color: (int,int,int) array array *)
-let load name =
-  let surface = Sdlloader.load_image name in
-  let (w, h) = get_dims surface in
-  let mat = Matrix.make w h (0,0,0) in
-    for x = 0 to w - 1 do
-      for y = 0 to h - 1 do
-        mat.(x).(y) <- Sdlvideo.get_pixel_color surface x y
-      done;
-    done;
-    mat
+let load = Sdlloader.load_image
 
 let color_of_bool = function
   | true -> Sdlvideo.black
@@ -75,25 +66,6 @@ let surface_of_matrix matrix =
       surface
     end
 
-(** Convert a RGB matrix ((int,int,int) array array) to a SDL surface *)
-let surface_of_rgb_matrix matrix =
-  let (w, h) = Matrix.get_dims matrix in
-  let surface = create_surface w h in
-    begin
-      for x = 0 to w - 1 do
-        for y = 0 to h - 1 do
-          Sdlvideo.put_pixel_color surface x y matrix.(x).(y)
-        done
-      done;
-      surface
-    end
-
 (** Display the corresponding SDL surface of a bool matrix on the dst display *)
 let show_matrix mat dst =
   show (surface_of_matrix mat) dst
-
-(** Display the corresponding SDL surface of a RGB matrix on the dst display *)
-let show_rgb_matrix mat dst =
-  show (surface_of_rgb_matrix mat) dst
-
-let bool_of_pixel (color,_,_) = color = 255
