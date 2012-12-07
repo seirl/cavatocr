@@ -190,6 +190,7 @@ let binarize image_grey =
     done;
     imageBin
 
+
 let binarize_sauvola imageBw =
   let (w,h) = Image.get_dims imageBw in
   let mat = Matrix.make w h false in
@@ -201,3 +202,48 @@ let binarize_sauvola imageBw =
     done;
     mat
 
+(* bin by JERENY*)
+let average matrix x y boxSize =
+        let sigma = ref 0 in
+        for i = x to x + boxSize do
+                for j = y to y + boxSize do
+                        let (grey,_,_) = matrix.(x).(y) in
+                        sigma := !sigma + grey
+                done
+        done;
+        !sigma / (boxSize * boxSize)
+
+let stdDeviation matrix x y boxSize average =
+        let sigma = ref 0 in
+        for i = x to x + boxSize do
+                for j = y to y + boxSize do
+                        let (grey,_,_) = matrix.(x).(y) in
+                        sigma := !sigma + (grey - average) * (grey - average)
+                done
+        done;
+        sqrt((1. /. (float boxSize *. float boxSize)) *. float !sigma)
+        
+
+let findThreshold pic x y boxSize =
+        let m = average pic (x - boxSize / 2) (y - boxSize / 2) boxSize in
+        let e = stdDeviation pic (x - boxSize / 2) (y - boxSize / 2) boxSize m in
+        int_of_float(float m *. (1. +. 0.2 *. ((e /. 128.) -. 1.)))
+
+let toBinPicture greyPic =
+        let binMat = Array.make_matrix (Array.length greyPic) (Array.length
+        greyPic.(0)) (0,0,0) and boxSize = 14 in
+        (*let threshold = findGeneralLimit greyPic in*)
+        (*let threshold = 127 in*)
+        for x = boxSize / 2 to Array.length greyPic - 1 - boxSize / 2 do
+                for y = boxSize / 2 to Array.length greyPic.(x) - 1 - boxSize / 2 do
+                        (*let threshold = findThreshold greyPic x y boxSize*)
+                        let threshold = average greyPic (x - boxSize / 2) (y - boxSize / 2)
+                        boxSize and (brightness,_,_) = greyPic.(x).(y) in
+(*                      Printf.printf "%d " threshold;*)
+                        if brightness < threshold then
+                                binMat.(x).(y) <- false
+                        else
+                                binMat.(x).(y) <- true
+                done
+        done;
+        binPic
