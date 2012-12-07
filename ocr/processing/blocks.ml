@@ -197,7 +197,7 @@ let block_of_img img =
   let (w, h) = Matrix.get_dims img in
     {l=0;r=w;b=h;t=0;img=img}
 
-(** Cut a an image into lines of text *)
+(** Cut an image into lines of text *)
 let get_lines (block:t_block) =
   begin
     let h = (block.b) - (block.t) in
@@ -246,7 +246,7 @@ let get_lines (block:t_block) =
   end
 
 
-(** Cut a an image into lines of text *)
+(** Cut a line of text into characters *)
 let get_chars (block:t_block) =
   begin
     let w = (block.r) - (block.l) in
@@ -267,14 +267,14 @@ let get_chars (block:t_block) =
           begin
           in_char := true;
           current_char :=
-             { l=block.l + i; r=block.r + i;
+             { l=block.l + i; r=block.l + i;
                t=block.t; b=block.t;
                img=[| block.img.(i) |]
              }
           end
 
       else if hhist.(i) <= threshold
-      (* end of a line *)
+      (* end of a character *)
       then
         begin
           in_char := false;
@@ -282,7 +282,7 @@ let get_chars (block:t_block) =
           current_char := sample_block
         end
       else
-      (* new row in a line *)
+      (* new pixel column in a character *)
         match !current_char with
           | ({l=l;r=r;t=t;b=b;img=c}) ->
               current_char :=
@@ -293,15 +293,92 @@ let get_chars (block:t_block) =
     List.rev !chars
   end
 
+let white_vhist line =
+  let hist = Array.make (Array.length line - 1) 0 in
+    begin
+      for i=0 to Array.length line - 2 do
+        hist.(i) <- line.(i+1).l - line.(i).r
+      done;
+      Array.sort (-) hist;
+      hist
+    end
 
-let extract_lines img = List.map (fun {l=_;r=_;t=_;b=_;img=i} -> i) (get_lines (block_of_img img))
+let max_vars dists nbmaxs =
+  let fst (a,b) = a in
+  let list_maxs = Array.make nbmaxs (0,-1) in
+    for i = 1 to (Array.length dists) - 1 do
+      let var = dists.(i) - dists.(i-1) in
+      let j = ref (nbmaxs - 1) in
+        while !j >= 0 && (fst (list_maxs.(!j))) >= var do
+          j := !j - 1
+        done;
+        if !j <> -1 then
+          begin
+            for k = 0 to !j - 1 do
+              list_maxs.(k) <- list_maxs.(k+1)
+            done;
+            list_maxs.(!j) <- (var, dists.(i-1))
+          end
+    done;
+    list_maxs
 
-let extract img = List.map (List.map (fun {l=_;r=_;t=_;b=_;img=i} -> i)) (List.map get_chars (get_lines (block_of_img img)))
+let moy_consecutive list_maxs =
+  let list_moy = Array.make (Array.length list_maxs) 0 in
+    for i = 0 to Array.length list_moy - 1 do
+      let var, low = list_maxs.(i) in
+      list_moy.(i) <- low + (var / 2)
+    done;
+    list_moy
+
+
+let get_words av_sep line =
+  let current_word = ref [| |] in
+  let words = ref [| |] in
+    for i=0 to Array.length line - 1 do
+      current_word := Array.append !current_word ([| line.(i) |]);
+      if i = Array.length line - 1 || (line.(i+1).l - line.(i).r) >= av_sep
+      then (* end of word *)
+        begin
+          words := Array.append !words [| !current_word |];
+          current_word := [| |]
+        end
+    done;
+    !words
+
+
+let img_of_block ({l=_;r=_;t=_;b=_;img=i}) = i
+
+
+(** Take a line (array of characters) and return a list of words (list of list
+  * of characters) *) 
+let words_of_line line =
+  let vhist = white_vhist line in
+  let [| _;words_threshold |] = moy_consecutive (max_vars vhist 2) in
+  Array.map (Array.map img_of_block) (get_words words_threshold line)
+
+
+(** Extract all text lines in an image (return a list of images) *)
+let extract_lines img =
+    List.map
+      img_of_block
+      (get_lines (block_of_img img))
+
+(** Extract all characters of an image (return a list of lines, each being a
+  * list of characters *)
+let extract_chars img =
+    List.map
+      (List.map img_of_block)
+      (List.map get_chars (get_lines (block_of_img img)))
+
 
 (* }}} *)
 
-(* Note : pour la détection des mots / colonnes etc : faire un histogramme de la
- * taille des espaces entre caractères puis remarquer que les pics ont trois
- * tailles *)
+(* Well, an extracted image is "bool array array array array array array" :
+ * An array of columns
+ * each being an array of lines
+ * each being an array of words
+ * each being an array of characters
+ * each being a matrix of bool
+ *)
 
 (* vim: set fdm=marker: *)
