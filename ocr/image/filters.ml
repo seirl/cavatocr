@@ -246,4 +246,4 @@ let toBinPicture greyPic =
                                 binMat.(x).(y) <- true
                 done
         done;
-        binPic
+        binMat
