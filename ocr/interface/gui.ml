@@ -8,6 +8,10 @@ let window =
   ignore (wnd#connect#destroy GMain.quit);
   wnd
 
+let image = GMisc.image
+~file:"./emplacement/du/fichier"
+~packing:vbox#add ()
+
 (** Ask for confirm when quit*)
 let confirm _ = 
   let dlg = GWindow.message_dialog
@@ -23,6 +27,7 @@ let confirm _ =
   dlg#destroy ();
   res
 
+let test = printf("Test.")
 (** Box where the image is put*)
 let vbox = GPack.vbox
   ~spacing:2
@@ -46,7 +51,7 @@ let bbox = GPack.button_box `HORIZONTAL
   ~packing:(vbox#pack ~expand:false) () 
 
 (** Check if we can add the pic & add*)
-let may_view btn () =
+let may_view btn () =(*-----------------------------------------------------------*)
 match btn#filename with
 Some n ->
 ignore (GMisc.image
@@ -67,15 +72,19 @@ let btn = GFile.chooser_button
           in ignore (btn#connect#selection_changed (may_view btn));
 btn
 
-(** The preprocessing function, add the link to the real action*)
+(** The preprocessing button*)
 let fonction1 = GButton.button
-~packing: bbox#add()
-~label: "preprocessing"
+~label: "Preprocessing"
+~packing: bbox#add() in
+    ignore(btn#connect#clicked ~callback:());(*...................................*)
+btn
 
-(** The extraction function*)
+(** The extraction button*)
 let fonction2 = GButton.button
+~label: "Extract"
 ~packing: bbox#add()
-~label: "extract"
+    in ignore (btn#connect#clicked ~callback:());(*...............................*)
+btn
 
 let btn = GButton.button
 ~packing: item2#add()
