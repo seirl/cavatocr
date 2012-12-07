@@ -231,7 +231,8 @@ let findThreshold pic x y boxSize =
 
 let toBinPicture greyPic =
         let binMat = Array.make_matrix (Array.length greyPic) (Array.length
-        greyPic.(0)) (0,0,0) and boxSize = 14 in
+        greyPic.(0)) false and boxSize = 14 in
+
         (*let threshold = findGeneralLimit greyPic in*)
         (*let threshold = 127 in*)
         for x = boxSize / 2 to Array.length greyPic - 1 - boxSize / 2 do
