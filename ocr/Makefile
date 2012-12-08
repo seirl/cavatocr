@@ -4,7 +4,7 @@ FLAGS := -use-ocamlfind -libs $(libs)
 BUILD := native
 SYNTAX := python3 syntax.py
 
-DIRS := . processing image nn
+DIRS := . processing image nn training
 
 comma := ,
 space :=
@@ -15,12 +15,16 @@ ML := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.ml,${dir})))
 MLI := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.mli,${dir})))
 
 URL_IMAGES := http://infoprepa.epita.fr/ImagesOCR/
+URL_FONTS := http://cavatocr.serialk.fr/downloads/fonts
 RSYNC := rsync --rsh='ssh' -vPtz
 
-.PHONY: all test clean gui syntax get_images doc
+.PHONY: all test clean gui syntax get_images get_fonts doc
 
 all: main.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
+
+training: training.ml get_fonts
+	$(OCAML) $(FLAGS) -Is ${DEPS} training.$(BUILD)
 
 test: test.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} test.$(BUILD)
@@ -33,6 +37,10 @@ clean:
 
 syntax:
 	$(SYNTAX) $(ML) $(MLI)
+
+get_fonts:
+	mkdir -p fonts
+	wget -r -c -A.ttf -nH -np -nd -nv -P fonts $(URL_FONTS)
 
 get_images:
 	mkdir -p test_images

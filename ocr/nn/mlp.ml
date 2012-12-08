@@ -90,14 +90,13 @@ object(self)
 
   method update_weights =
     for i = 0 to size - 1 do
-      neuron.(i)#update_weights rate momentum errors.(i) input
+      neuron.(i)#new_weights rate momentum errors.(i) input
     done
 
   initializer
     weights#map (fun _ -> (Random.float 2.) -. 1.)
 
 end
-
 
 let from_file path =
   let file = open_in path in

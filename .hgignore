@@ -9,6 +9,7 @@ conf.yml
 test/
 test.ml
 test_images/
+fonts/
 
 .rbenv-version
 .bundle
