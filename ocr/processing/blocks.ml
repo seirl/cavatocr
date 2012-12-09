@@ -249,8 +249,10 @@ let words_of_line line =
      content=([||])
     } else
   let vhist = white_vhist (line.content) in
-  let [| _;words_threshold |] = moy_consecutive (max_vars vhist 2) in
-  get_words words_threshold line
+  match moy_consecutive (max_vars vhist 2) with
+    | [| _;words_threshold |] ->
+        get_words words_threshold line
+    | _ -> failwith "words_of_line: moy_consecutive didn't return 2 elements"
 
 let extract img =
   let w, h = Matrix.get_dims img in
