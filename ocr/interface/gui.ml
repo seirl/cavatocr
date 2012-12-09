@@ -67,7 +67,7 @@ let buttonopen =
   let button = GFile.chooser_button
                  ~action:`OPEN
                  ~packing:item1#add ()
-  in button#connect#selection_changed (may_view button);
+  in ignore (button#connect#selection_changed (may_view button));
      button
 
 (** Item2 : The edit button, useless for the moment, the place to radio button*)
@@ -143,14 +143,12 @@ let buttonquit =
   let btn = GButton.button
               ~stock:`QUIT
               ~packing:bbox#add () in
-    btn#connect#clicked ~callback:GMain.quit;
+    ignore (btn#connect#clicked ~callback:GMain.quit);
     btn
 
 (* }}} *)
 
 let main () =
-  window#event#connect#delete confirm;
+  ignore (window#event#connect#delete confirm);
   window#show ();
   GMain.main ()
-
-let _ = main ()
