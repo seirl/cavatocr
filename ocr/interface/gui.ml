@@ -1,16 +1,38 @@
 let window =
-  GMain.init ();
-  let wnd = GWindow.window
+  ignore (GMain.init ());
+  let window = GWindow.window
     ~title:"CavatOCR"
-    ~position:`CENTER 
+    ~position:`CENTER
     ~resizable:true
     ~width:400 ~height:600 () in
-  wnd#connect#destroy GMain.quit;
-  wnd
+  ignore (window#connect#destroy GMain.quit);
+  window
 
-(*delete main page *)
+(* Where everything happends*)
+let vbox = GPack.vbox
+  ~spacing:2
+  ~border_width:2
+  ~packing:window#add ()
 
-let confirm _ = 
+(*Box of the pic*)
+let view = GPack.vbox ~packing:vbox#add ()
+
+(* {{{ function zone *)
+(*Check if we can add the pic & add*)
+let may_view btn () =
+match btn#filename with
+Some n ->
+ignore (GMisc.image
+~file: n
+~packing:view#add())
+| None -> ()
+
+(* Function to Test. *)
+let print_test () =
+  Printf.printf "Test.\n"
+
+(* To avoid unfortunate closing*)
+let confirm _ =
   let dlg = GWindow.message_dialog
     ~message:"<b><big>Do you really want to leave ?</big>\n\n\
       Warning :\nall unsaved modifications will be lost </b>\n"
@@ -23,72 +45,38 @@ let confirm _ =
   let res = dlg#run () = `NO in
   dlg#destroy ();
   res
+(* }}} *)
 
-
-let vbox = GPack.vbox  (* Box where the image is put*)
-  ~spacing:2
-  ~border_width:2
-  ~packing:window#add ()
-
-
-let toolbar = GButton.toolbar   (*box of toolbar of top  inteface*)  
-  ~orientation:`HORIZONTAL  
-  ~style:`ICONS 
+(* {{{ toolbar zone *)
+(* The toolbar*)
+let toolbar = GButton.toolbar
+  ~orientation:`HORIZONTAL
+  ~style:`ICONS
   (*~layout:`SPREAD*) (*This fonction bug*)
-  ~packing:(vbox#pack ~expand:false) ()  
-
-
-let view = GPack.vbox ~packing:vbox#add () (*Box of the pic *)
-
-let bbox = GPack.button_box `HORIZONTAL (*Box of bottom interface*)
-  ~layout:`EDGE 
-  ~border_width:2
-  ~packing:(vbox#pack ~expand:false) () 
-
-(*Check if we can add the pic & add*)
-let may_view btn () =
-match btn#filename with
-Some n ->
-ignore (GMisc.image
-~file: n
-~packing:view#add())
-| None -> ()
+  ~packing:(vbox#pack ~expand:false) ()
 
 (*Stock of picture for the toolbar*)
-let item = GButton.tool_item ~packing:toolbar#insert () 
+let item1 = GButton.tool_item ~packing:toolbar#insert ()
 let item2 = GButton.tool_item ~packing:toolbar#insert ()
 let item3 = GButton.tool_item ~packing:toolbar#insert ()
 let item4 = GButton.tool_item ~packing:toolbar#insert ()
 
+(**)
 let buttonopen =
-let btn = GFile.chooser_button
+let button = GFile.chooser_button
 ~action:`OPEN
-~packing:item#add ()
-          in btn#connect#selection_changed (may_view btn);
-btn
+~packing:item1#add ()
+          in button#connect#selection_changed (may_view button);
+button
 
-(* the preprocessing function, add the link to the real action*)
-
-let fonction1 = GButton.button
-~packing: bbox#add()
-~label: "preprocessing"
-
-(*The extraction function*)
-let fonction2 = GButton.button
-~packing: bbox#add()
-~label: "extract"
-(* fonction1#connect#clicked ~callback: fonction args*)
-
-
-let btn = GButton.button
+(** Item2 : The edit button, useless for the moment, the place to radio button*)
+let button = GButton.button
 ~packing: item2#add()
 ~label: "Edit"
-(*add a menu with radio button of the filtres*)
 
-
+(** Item3 : Where help is more or less given when clicked*)
 let help_button =
   let dlg = GWindow.message_dialog
-    
 ~message:"<b><big>Need help ?</big>\n\n\
 type CavatOCR --help</b>"
     ~parent:window
@@ -98,12 +86,13 @@ type CavatOCR --help</b>"
     ~position:`CENTER_ON_PARENT
     ~buttons:GWindow.Buttons.ok     ()
  in
-  let btn = GButton.button ~stock:`HELP ~packing:item3#add () in
-   GMisc.image ~stock:`HELP ~packing:btn#set_image ();
-  btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ());
-  btn
+  let button = GButton.button ~stock:`HELP ~packing:item3#add () in
+  ignore (GMisc.image ~stock:`HELP ~packing:button#set_image ());
+  ignore (button#connect#clicked
+            (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
+  button
 
-
+(** Item4 : The button where our names appear*)
 let about_button =
   let dlg = GWindow.about_dialog
   ~authors:["Pinkie PIE :\nHervot Paul, Pietri Antoine,
@@ -116,22 +105,49 @@ let about_button =
     ~position:`CENTER_ON_PARENT
     ~parent:window
     ~destroy_with_parent:true () in
-  let btn = GButton.button ~stock:`ABOUT ~packing:item4#add () in
-   GMisc.image ~stock:`ABOUT ~packing:btn#set_image ();
-  btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ());
-  btn
+  let button = GButton.button ~stock:`ABOUT ~packing:item4#add () in
+   ignore (GMisc.image ~stock:`ABOUT ~packing:button#set_image ());
+  ignore (button#connect#clicked
+            (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
+  button
 
-let buttonquit = 
+
+(* }}} *)
+
+(* {{{ button zone*)
+(* The button bar*)
+let bbox = GPack.button_box `HORIZONTAL (*Box of bottom interface*)
+  ~layout:`EDGE
+  ~border_width:2
+  ~packing:(vbox#pack ~expand:false) ()
+
+(** The preprocessing button*)
+let preprocessing =
+  let button = GButton.button
+    ~label: "Preprocessing"
+    ~packing: bbox#add()
+    in ignore(button#connect#clicked ~callback:(print_test));
+button
+
+(** The extraction button*)
+let extract =
+  let button = GButton.button
+    ~label: "Extract"
+    ~packing: bbox#add()
+    in ignore (button#connect#clicked ~callback:(print_test));
+button
+
+(* The button to quit*)
+let buttonquit =
   let btn = GButton.button
     ~stock:`QUIT
     ~packing:bbox#add () in
   btn#connect#clicked ~callback:GMain.quit;
   btn
 
+(* }}} *)
+
 let _ =
   window#event#connect#delete confirm;
   window#show ();
   GMain.main ()
-
-
-(*ocaml -w s -I +lablgtk1 lablgtk.cma ocr.ml*)
