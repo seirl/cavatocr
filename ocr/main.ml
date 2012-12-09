@@ -7,7 +7,7 @@ let show img =
       Image.wait_key ();
     end
 
-let main () = print_string "tatatin"
+let main () = Gui.main ()
 
 let get_filter file = Filters.binarize (Filters.image2grey (Image.load file))
 let filter file = show (get_filter file)
