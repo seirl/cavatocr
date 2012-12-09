@@ -17,7 +17,8 @@ let image2grey src =
         Sdlvideo.put_pixel_color src x y
           (color2grey (Sdlvideo.get_pixel_color src x y))
       done
-    done
+    done;
+    src
 
 let fst (a,_,_) = a
 
