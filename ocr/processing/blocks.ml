@@ -1,152 +1,34 @@
-(* {{{ old *)
-(** This module can detect blocks of text and extract all characters from an
-    image.
-    In this module, the term "image" refer to a bool array array (the binary
-    matrix representation of an image)
-  *)
+(** Shortcut for defining an image *)
+type img_t = bool array array
 
-let bool_sum = Array.fold_left (fun n b -> if b then n+1 else n) 0
+(** Different types of block *)
+type id_block =
+  | Page
+  | Line
+  | Word
+  | Character
+  | Image (* Generic *)
 
-let get_line i h = Array.map (fun col -> col.(h - 1 - i))
+(** A block of text *)
+type 'a t_block =
+{
+    id:id_block; (* Tells which type of block it is *)
+    l:int; (* Left edge *)
+    r:int; (* Right edge *)
+    t:int; (* Top edge *)
+    b:int; (* Bottom edge *)
 
-(** Get the vertical histogram of an image *)
-let vertical_histt img =
+    mutable content: 'a
+}
+
+let content_of_block ({id=_;l=_;r=_;t=_;b=_;content=i}) = i
+
+let sample_block t = {id=t;l=0;r=0;t=0;b=0;content=Matrix.make 0 0 false}
+
+let block_of_img ?l:(l=0) ?t:(t=0) img =
   let (w, h) = Matrix.get_dims img in
-  let hist = Array.make h 0 in
-    begin
-      for y = 0 to h - 1 do
-        hist.(y) <- bool_sum (get_line y h img);
-      done;
-      hist
-    end
+    {id=Image;l=0;r=w;b=h;t=0;content=img}
 
-(** Get the horizontal histogram of an image *)
-let horizontal_hist img = Array.map bool_sum img
-
-let rot_170 img =
-  begin
-    let (w, h) = Matrix.get_dims img in
-    let rotated = Matrix.make h w true in
-      for x = 0 to w - 1 do
-        for y = 0 to h - 1 do
-          rotated.(y).(w - 1 - x) <- img.(x).(y)
-        done;
-      done;
-      rotated
-  end
-
-(** Calculate the average size of all characters in a list of lines (each being
-  * a list of words, each being a list of characters) *)
-let rec average_char_size nbchar sum = function
-  | [] -> sum / nbchar
-  | (([] :: words) :: lines) ->  average_char_size (nbchar) (sum) (words :: lines)
-  | ([] :: lines) -> average_char_size (nbchar) (sum) (lines)
-  | (((c :: chars) :: words) :: lines) ->
-      let (w, h) = Matrix.get_dims c in
-        average_char_size (nbchar+1) (sum+(w*h)) ((chars :: words) :: lines)
-
-(** Get the list of lines present in the image *)
-let lines_of_image (img:bool array array) =
-  let hist = vertical_histt img in
-  let h = Array.length hist in
-  let threshold = 2 in
-  let rec merge_per_line (y:int) (accu:bool array array list) =
-    (* End of image, return final merge *)
-    if y >= h then accu
-
-    else let line = get_line y h img in
-      (* Empty line, discard and evaluate next *)
-      if hist.(y) <= threshold then merge_per_line (y + 1) accu
-
-      (* First line and non-empty or new non-empty line after some empty *)
-      else if y = 0 || hist.(y - 1) <= threshold
-      then merge_per_line (y + 1) ([| line |] :: accu)
-
-      (* Another non-empty line *)
-      else match accu with
-        | [] -> failwith
-                  "merge_line: not first non-empty line but accu is empty"
-        | block_lines :: accu_t ->
-            merge_per_line (y + 1)
-              ((Array.append block_lines ([| line |])) :: accu_t)
-  in
-    List.map
-      (fun mat -> rot_170 mat)
-      (merge_per_line 0 [])
-
-let words_of_line (line:bool array array) =
-  let hist = horizontal_hist line in
-  let w = Array.length hist in
-  let threshold = 0 in
-  let whitespace_threshold = 8 in
-  let rec merge_per_col (x:int) (whitespace:int) (accu:bool array array list) =
-    (* End of image, return final merge *)
-    if x >= w then accu
-
-    else let col = line.(x) in
-      (* Empty column *)
-      if hist.(x) <= threshold
-      then match accu with
-        | [] -> merge_per_col (x + 1) (0) (accu)
-        | block_char :: accu_t ->
-            if whitespace <= whitespace_threshold then
-              merge_per_col (x + 1) (whitespace + 1)
-                ((Array.append block_char ([| col |])) :: accu_t)
-            else
-              merge_per_col (x + 1) (whitespace + 1) accu
-
-      (* First column and non-empty or new non-empty column after many empty *)
-      else if accu = [] || (hist.(x - 1) <= threshold
-           && whitespace >= whitespace_threshold)
-      then merge_per_col (x + 1) 0 ([| col |] :: accu)
-
-      (* Another non-empty column *)
-      else match accu with
-        | [] -> failwith
-                  "merge_line: not first non-empty line but accu is empty"
-        | block_char :: accu_t ->
-            merge_per_col (x + 1) (0)
-              ((Array.append block_char ([| col |])) :: accu_t)
-  in
-    List.rev (merge_per_col 0 0 [])
-
-(** Get the list of characters present in a line *)
-let chars_of_line (line:bool array array) =
-  let hist = horizontal_hist line in
-  let w = Array.length hist in
-  let threshold = 0 in
-  let rec merge_per_col (x:int) (accu:bool array array list) =
-    (* End of image, return final merge *)
-    if x >= w then accu
-
-    else let col = line.(x) in
-      (* Empty column, discard and evaluate next *)
-      if hist.(x) <= threshold then merge_per_col (x + 1) accu
-
-      (* First column and non-empty or new non-empty column after some empty *)
-      else if x = 0 || hist.(x - 1) <= threshold
-      then merge_per_col (x + 1) ([| col |] :: accu)
-
-      (* Another non-empty column *)
-      else match accu with
-        | [] -> failwith
-                  "merge_line: not first non-empty line but accu is empty"
-        | block_char :: accu_t ->
-            merge_per_col (x + 1)
-              ((Array.append block_char ([| col |])) :: accu_t)
-  in
-    List.rev (merge_per_col 0 [])
-
-(** Get all characters of an image *)
-let words_of_image img = List.map (words_of_line) (lines_of_image img)
-let chars_of_image img = List.map (List.map chars_of_line) (words_of_image img)
-
-(** Map function for element of a bool array array list list list *)
-let map_extracted f = List.map (List.map (List.map f))
-
-(* }}} *)
-
-(* {{{ new method *)
 let bool_sum = Array.fold_left (fun n b -> if b then n+1 else n) 0
 
 let get_line i img =
@@ -179,33 +61,17 @@ let rot_170 img =
       rotated
   end
 
-type t_block =
-{
-    l:int; (* Left edge *)
-    r:int; (* Right edge *)
-    t:int; (* Top edge *)
-    b:int; (* Bottom edge *)
-
-    mutable img:bool array array
-}
-
-let sample_block = {l=0;r=0;t=0;b=0;img=Matrix.make 0 0 false}
-
 let add_row img row = Array.append img ([| row |])
 
-let block_of_img img =
-  let (w, h) = Matrix.get_dims img in
-    {l=0;r=w;b=h;t=0;img=img}
-
 (** Cut an image into lines of text *)
-let get_lines (block:t_block) =
+let get_lines (block: img_t t_block)=
   begin
     let h = (block.b) - (block.t) in
     let lines = ref [] in
-    let current_line = ref sample_block in
+    let current_line = ref (sample_block Line) in
     let threshold = 3 in
     let in_line = ref false in
-    let vhist = vertical_histt (block.img) in
+    let vhist = vertical_histt (block.content) in
 
     for i=0 to h-1 do
       if not !in_line
@@ -218,9 +84,10 @@ let get_lines (block:t_block) =
           begin
           in_line := true;
           current_line :=
-             { l=block.l; r=block.r;
+             { id=Line;
+               l=block.l; r=block.r;
                t=block.t + i; b=block.t + i;
-               img=[| get_line i (block.img) |]
+               content=[| get_line i (block.content) |]
              }
           end
 
@@ -230,31 +97,34 @@ let get_lines (block:t_block) =
         begin
           in_line := false;
           lines := !current_line :: !lines;
-          current_line := sample_block
+          current_line := sample_block Line
         end
       else
       (* new row in a line *)
         match !current_line with
-          | ({l=l;r=r;t=t;b=b;img=line}) ->
+          | ({id=id;l=l;r=r;t=t;b=b;content=line}) ->
               current_line :=
-              {l=l;r=r;t=t;b=b+1;
-               img=add_row line (get_line i (block.img))
+              {id=id;l=l;r=r;t=t;b=b+1;
+               content=add_row line (get_line i (block.content))
               }
     done;
-    List.iter (fun block -> block.img <- rot_170 block.img) !lines;
-    !lines
+    List.iter (fun block -> block.content <- rot_170 block.content) !lines;
+    { id=Page;
+      l=block.l;r=block.r;
+      b=block.b;t=block.t;
+      content=Array.of_list (!lines)}
   end
 
 
 (** Cut a line of text into characters *)
-let get_chars (block:t_block) =
+let get_chars (block: img_t t_block) =
   begin
     let w = (block.r) - (block.l) in
     let chars = ref [] in
-    let current_char = ref sample_block in
+    let current_char = ref (sample_block Character) in
     let threshold = 1 in
     let in_char = ref false in
-    let hhist = horizontal_hist (block.img) in
+    let hhist = horizontal_hist (block.content) in
 
     for i=0 to w-1 do
       if not !in_char
@@ -267,9 +137,10 @@ let get_chars (block:t_block) =
           begin
           in_char := true;
           current_char :=
-             { l=block.l + i; r=block.l + i;
+             { id=Character;
+               l=block.l + i; r=block.l + i;
                t=block.t; b=block.t;
-               img=[| block.img.(i) |]
+               content=[| block.content.(i) |]
              }
           end
 
@@ -279,18 +150,22 @@ let get_chars (block:t_block) =
         begin
           in_char := false;
           chars := !current_char :: !chars;
-          current_char := sample_block
+          current_char := sample_block Character
         end
       else
       (* new pixel column in a character *)
         match !current_char with
-          | ({l=l;r=r;t=t;b=b;img=c}) ->
+          | ({id=id;l=l;r=r;t=t;b=b;content=c}) ->
               current_char :=
-              {l=l;r=r+1;t=t;b=b;
-               img=add_row c (block.img.(i))
+              { id=id;l=l;r=r+1;t=t;b=b;
+                content=add_row c (block.content.(i))
               }
     done;
-    List.rev !chars
+    { id=Page;
+      l=block.l;r=block.r;
+      b=block.b;t=block.t;
+      content=Array.of_list (List.rev !chars)
+    }
   end
 
 let white_vhist line =
@@ -331,7 +206,7 @@ let moy_consecutive list_maxs =
     list_moy
 
 
-let get_words av_sep line =
+let get_words av_sep ({id=_;l=l;r=r;t=t;b=b;content=line}) =
   let current_word = ref [| |] in
   let words = ref [| |] in
     for i=0 to Array.length line - 1 do
@@ -343,35 +218,56 @@ let get_words av_sep line =
           current_word := [| |]
         end
     done;
-    !words
+    {id=Line;
+     l=l;r=r;
+     t=t;b=b;
+     content=(!words)
+    }
 
 
-let img_of_block ({l=_;r=_;t=_;b=_;img=i}) = i
+(** Extract all text lines in an image (return a list of blocks) *)
+let extract_lines img = get_lines (block_of_img img)
+
+(** Extract all characters of an image (return a list of lines, each being a
+  * block containing a list of blocks characters *)
+let extract_chars img =
+  let img = get_lines (block_of_img img) in
+  {id=img.id;
+   l=img.l;r=img.r;
+   t=img.t;b=img.b;
+   content=Array.map get_chars (img.content)
+  }
 
 
 (** Take a line (array of characters) and return a list of words (list of list
-  * of characters) *) 
+  * of characters) *)
 let words_of_line line =
-  let vhist = white_vhist line in
+  if line.content = [||] then
+    {id=Line;
+     l=0;r=0;
+     t=0;b=0;
+     content=([||])
+    } else
+  let vhist = white_vhist (line.content) in
   let [| _;words_threshold |] = moy_consecutive (max_vars vhist 2) in
-  Array.map (Array.map img_of_block) (get_words words_threshold line)
+  get_words words_threshold line
+
+let extract img =
+  let w, h = Matrix.get_dims img in
+  let chars = extract_chars img in
+ {id=Page;
+  l=0;r=w;
+  t=0;b=h;
+  content=Array.map (words_of_line) (chars.content)
+ }
+
+let expand_full_block block =
+  let lines = block.content in
+  let words = Array.map content_of_block lines in
+  let chars = Array.map (Array.map (Array.map content_of_block)) words in
+    chars
 
 
-(** Extract all text lines in an image (return a list of images) *)
-let extract_lines img =
-    List.map
-      img_of_block
-      (get_lines (block_of_img img))
-
-(** Extract all characters of an image (return a list of lines, each being a
-  * list of characters *)
-let extract_chars img =
-    List.map
-      (List.map img_of_block)
-      (List.map get_chars (get_lines (block_of_img img)))
-
-
-(* }}} *)
 
 (* Well, an extracted image is "bool array array array array array array" :
  * An array of columns
