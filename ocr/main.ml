@@ -9,7 +9,7 @@ let show img =
 
 let main () = Gui.main ()
 
-let get_filter file = Filters.binarize (Filters.image2grey (Image.load file))
+let get_filter file = Filters.filter (Image.load file)
 let filter file = show (get_filter file)
 
 let get_rotate file =

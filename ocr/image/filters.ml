@@ -257,3 +257,6 @@ let toBinPicture greyPic =
       done
     done;
     binMat
+
+let filter img =
+  binarize (image2grey img)
