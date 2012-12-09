@@ -278,5 +278,3 @@ let expand_full_block block =
  * each being an array of characters
  * each being a matrix of bool
  *)
-
-(* vim: set fdm=marker: *)
