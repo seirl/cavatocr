@@ -1,18 +1,15 @@
 let window =
-  ignore (GMain.init ());
+  GMain.init ();
   let wnd = GWindow.window
     ~title:"CavatOCR"
     ~position:`CENTER 
     ~resizable:true
     ~width:400 ~height:600 () in
-  ignore (wnd#connect#destroy GMain.quit);
+  wnd#connect#destroy GMain.quit;
   wnd
 
-let image = GMisc.image
-~file:"./emplacement/du/fichier"
-~packing:vbox#add ()
+(*delete main page *)
 
-(** Ask for confirm when quit*)
 let confirm _ = 
   let dlg = GWindow.message_dialog
     ~message:"<b><big>Do you really want to leave ?</big>\n\n\
@@ -27,31 +24,29 @@ let confirm _ =
   dlg#destroy ();
   res
 
-let test = printf("Test.")
-(** Box where the image is put*)
-let vbox = GPack.vbox
+
+let vbox = GPack.vbox  (* Box where the image is put*)
   ~spacing:2
   ~border_width:2
   ~packing:window#add ()
 
-(** Box of toolbar of top  inteface*)
-let toolbar = GButton.toolbar
+
+let toolbar = GButton.toolbar   (*box of toolbar of top  inteface*)  
   ~orientation:`HORIZONTAL  
   ~style:`ICONS 
   (*~layout:`SPREAD*) (*This fonction bug*)
   ~packing:(vbox#pack ~expand:false) ()  
 
-(** Box of the pic *)
-let view = GPack.vbox ~packing:vbox#add ()
 
-(** Box of bottom interface*)
-let bbox = GPack.button_box `HORIZONTAL
+let view = GPack.vbox ~packing:vbox#add () (*Box of the pic *)
+
+let bbox = GPack.button_box `HORIZONTAL (*Box of bottom interface*)
   ~layout:`EDGE 
   ~border_width:2
   ~packing:(vbox#pack ~expand:false) () 
 
-(** Check if we can add the pic & add*)
-let may_view btn () =(*-----------------------------------------------------------*)
+(*Check if we can add the pic & add*)
+let may_view btn () =
 match btn#filename with
 Some n ->
 ignore (GMisc.image
@@ -59,7 +54,7 @@ ignore (GMisc.image
 ~packing:view#add())
 | None -> ()
 
-(** Stock of picture for the toolbar*)
+(*Stock of picture for the toolbar*)
 let item = GButton.tool_item ~packing:toolbar#insert () 
 let item2 = GButton.tool_item ~packing:toolbar#insert ()
 let item3 = GButton.tool_item ~packing:toolbar#insert ()
@@ -69,26 +64,27 @@ let buttonopen =
 let btn = GFile.chooser_button
 ~action:`OPEN
 ~packing:item#add ()
-          in ignore (btn#connect#selection_changed (may_view btn));
+          in btn#connect#selection_changed (may_view btn);
 btn
 
-(** The preprocessing button*)
+(* the preprocessing function, add the link to the real action*)
+
 let fonction1 = GButton.button
-~label: "Preprocessing"
-~packing: bbox#add() in
-    ignore(btn#connect#clicked ~callback:());(*...................................*)
-btn
-
-(** The extraction button*)
-let fonction2 = GButton.button
-~label: "Extract"
 ~packing: bbox#add()
-    in ignore (btn#connect#clicked ~callback:());(*...............................*)
-btn
+~label: "preprocessing"
+
+(*The extraction function*)
+let fonction2 = GButton.button
+~packing: bbox#add()
+~label: "extract"
+(* fonction1#connect#clicked ~callback: fonction args*)
+
 
 let btn = GButton.button
 ~packing: item2#add()
 ~label: "Edit"
+(*add a menu with radio button of the filtres*)
+
 
 let help_button =
   let dlg = GWindow.message_dialog
@@ -103,9 +99,8 @@ type CavatOCR --help</b>"
     ~buttons:GWindow.Buttons.ok     ()
  in
   let btn = GButton.button ~stock:`HELP ~packing:item3#add () in
-  ignore (GMisc.image ~stock:`HELP ~packing:btn#set_image ());
-  ignore (btn#connect#clicked
-            (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
+   GMisc.image ~stock:`HELP ~packing:btn#set_image ();
+  btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ());
   btn
 
 
@@ -122,19 +117,21 @@ let about_button =
     ~parent:window
     ~destroy_with_parent:true () in
   let btn = GButton.button ~stock:`ABOUT ~packing:item4#add () in
-   ignore (GMisc.image ~stock:`ABOUT ~packing:btn#set_image ());
-  ignore (btn#connect#clicked
-            (fun () -> ignore (dlg#run ()); dlg#misc#hide ()));
+   GMisc.image ~stock:`ABOUT ~packing:btn#set_image ();
+  btn#connect#clicked (fun () -> ignore (dlg#run ()); dlg#misc#hide ());
   btn
 
 let buttonquit = 
   let btn = GButton.button
     ~stock:`QUIT
     ~packing:bbox#add () in
-  ignore (btn#connect#clicked ~callback:GMain.quit);
+  btn#connect#clicked ~callback:GMain.quit;
   btn
 
 let _ =
-  ignore (window#event#connect#delete confirm);
+  window#event#connect#delete confirm;
   window#show ();
   GMain.main ()
+
+
+(*ocaml -w s -I +lablgtk1 lablgtk.cma ocr.ml*)
