@@ -14,6 +14,13 @@ let vbox = GPack.vbox
   ~border_width:2
   ~packing:window#add ()
 
+(* The toolbar*)
+let toolbar = GButton.toolbar
+  ~orientation:`HORIZONTAL
+  ~style:`ICONS
+  (*~layout:`SPREAD*) (*This fonction bug*)
+  ~packing:(vbox#pack ~expand:false) ()
+
 (*Box of the pic*)
 let view = GPack.vbox ~packing:vbox#add ()
 
@@ -48,12 +55,6 @@ let confirm _ =
 (* }}} *)
 
 (* {{{ toolbar zone *)
-(* The toolbar*)
-let toolbar = GButton.toolbar
-  ~orientation:`HORIZONTAL
-  ~style:`ICONS
-  (*~layout:`SPREAD*) (*This fonction bug*)
-  ~packing:(vbox#pack ~expand:false) ()
 
 (*Stock of picture for the toolbar*)
 let item1 = GButton.tool_item ~packing:toolbar#insert ()
