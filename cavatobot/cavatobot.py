@@ -23,7 +23,10 @@ def rdc(msg):
 
 def shortenurl(url):
     url = 'http://ln-s.net/home/api.jsp?url={}'.format(url)
-    r = requests.get(url).text
+    try:
+        r = requests.get(url).text
+    except:
+        return url
     return r.split()[1]
 
 
