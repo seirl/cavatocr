@@ -1,0 +1,8 @@
+Usage: ./main.native --gui | --filter | --rotate | --extract | --train
+  --gui launch the user interface
+  --filter Show the image after cleaning
+  --rotate Show the image cleaned and reorientated
+  --extract Print the recognized text
+  --train Train the neural network
+  -help  Display this list of options
+  --help  Display this list of options
