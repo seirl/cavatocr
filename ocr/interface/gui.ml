@@ -8,10 +8,6 @@ let window =
     ignore (window#connect#destroy GMain.quit);
     window
 
-(*Test with pointers*)
-let name_of_image = ref ""
-let name_of_text = ref ""
- 
 (* Where everything happends*)
 let vbox = GPack.vbox
              ~spacing:2
@@ -26,80 +22,9 @@ let toolbar = GButton.toolbar
                 ~packing:(vbox#pack ~expand:false) ()
 
 (*Box of the pic*)
-let view = GBin.scrolled_window
- ~packing:vbox#add ()
+let view = GPack.vbox ~packing:vbox#add ()
 
 (* {{{ function zone *)
-(*GUIgui*)
-(* Image*)
-let view_image = GMisc.image
-  ~file:!name_of_image
-  ~packing:view#add_with_viewport ()
-
-let open_image my_image () =
-  print_string (my_image#filename);
-  name_of_image := my_image#filename;
-  view_image#set_file !name_of_image
-
-(* Text*)
-let view_text = new Gui_class_text.editor
-  ~packing:scrolled_window_text#add_with_viewport ()
-
-let insert_text (buffer : GText.buffer) =
-   buffer#set_text (!name_of_text)
-
-
-(* Ca marche bien parce que c'est pique
- *(* Button temporaire *)
-  let button_open = GButton.button () in
-   Gui_button.make_icon
-    "icons/open.png" "Open" button_open#add ();
-   table1#attach
-    ~left:0
-    ~top:0 (button_open#coerce);
-    button_open#connect#clicked ~callback:(display_dialog_box);
-
-    let button_pretreat = GButton.button () in
-    Gui_button.make_icon
-      "icons/pretreatment.png" "Preprocessing" button_pretreat#add ();
-    table1#attach
-      ~left:1
-      ~top:0 (button_pretreat#coerce);
-    (*button_pretreat#connect#clicked ~callback:(actualize view_image);*)
-
-    let button_recogni = GButton.button () in
-      Gui_button.make_icon
-        "icons/recognition.xpm" "Extraction" button_recogni#add ();
-      table1#attach
-        ~left:2
-        ~top:0 (button_recogni#coerce);
-      button_recogni#connect#clicked ~callback:(recognition);
-
-      let button_save = GButton.button () in
-        Gui_button.make_icon
-          "icons/save.png" "Save Text" button_save#add ();
-        table1#attach ~left:3 ~top:0 (button_save#coerce);
-        button_save#connect#clicked ~callback:(view_text#save_as);
-
-      let button_help = GButton.button () in
-      Gui_button.make_icon
-             "icons/help.png" "Help & About" button_help#add ();
-      table1#attach ~left:4 ~top:0 (button_help#coerce);
-      button_help#connect#clicked ~callback:(Gui_help_menu.help_contents);
-
-       let buffer = view_text#text#buffer in
-          insert_text buffer;
-      GtkSpell.attach (*~lang:"fr iso8859-1"*) view_text#text;
-       window#add_accel_group accel_group;
-        window#show ();
-    GMain.main ()
-          
-
- *
- *
- *
- * *)
-
 (*Check if we can add the pic & add*)
 let may_view btn () =
   match btn#filename with
@@ -112,15 +37,6 @@ let may_view btn () =
 (* Function to Test. *)
 let print_test () =
   Printf.printf "Test.\n"
-  (*Trucs bien: GText GFile GAction*)
-(* ce serait que la fonction te renvoit une matrice de booléens, que tu garde
- *dans un coin, pour l'afficher tu peux appeler Image.surface_of_matrix dessus*)
-
-let save (text : GText.view) file =
-  let och = open_out file in
-  output_string och (text#buffer#get_text ());
-  close_out och
-
 
 (* To avoid unfortunate closing*)
 let confirm _ =
