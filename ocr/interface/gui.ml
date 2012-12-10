@@ -167,11 +167,10 @@ let extr () =
     let filtered = get_filter file in
       Rotate.rotate filtered (Rotate.get_skew_angle filtered)
   in
-  let recognize_char mat = (* FIXME seirl *)
-    let corr = Resize.local_moy mat 5 5 in
-    let mlp = Mlp.from_file "nn.bin" in
-      mlp#process corr;
-      mlp#find_char
+  let recognize_char mat =
+    let network = new Network.network in
+      network#from_file "network.bin";
+      network#read_char mat
 
   in
 

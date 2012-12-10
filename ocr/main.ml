@@ -23,10 +23,9 @@ let rotate file =
     show (Rotate.trace_histogram filtered angle)
 
 let recognize_char mat = 
-  let corr = Resize.local_moy mat 5 5 in
-  let mlp = Mlp.from_file "nn.bin" in
-    mlp#process corr;
-    mlp#find_char
+  let network = new Network.network in
+    network#from_file "network.bin";
+    network#read_char mat
 
 let recognize_word word =
   let rec_array = Array.map recognize_char word in
@@ -48,9 +47,9 @@ let get_extract file =
     recognize_page expanded
 let extract file = print_endline (get_extract file)
 
-let train () =
+let train n =
   Image.sdl_init ();
-  Ttf.train()
+  Ttf.train n
 
 let specs = 
   [
@@ -58,7 +57,7 @@ let specs =
     ("--filter", Arg.String(filter), "Show the image after cleaning");
     ("--rotate", Arg.String(rotate), "Show the image cleaned and reorientated");
     ("--extract", Arg.String(extract), "Print the recognized text");
-    ("--train", Arg.Unit(train), "Train the neural network")
+    ("--train", Arg.Int(train), "Train the neural network")
   ]
 
 let usage =

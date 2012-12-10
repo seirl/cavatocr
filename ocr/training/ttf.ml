@@ -1,5 +1,8 @@
-let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" ^
-            "!\"#$%&'()*+,-./:;<=>?@[]^_`{|}~\\"
+let chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    ^ "!\"#$%&'()*+,-./:;<=>?@[]^_`{|}~\\"
+let chars_separated = "0 1 2 3 4 5 6 7 8 9 a b c d e f g h i j k l m n o p q r"
+    ^ "s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Z"
+    ^ "! \" # $ % & ' ( ) * + , - . / : ; < = > ? @ [ ] ^ _ ` { | } ~ \\"
 
 type fontstyle =
   | Normal
@@ -23,44 +26,37 @@ let make_image font str =
       done
     done;
     Sdlvideo.blit_surface src dst ();
-    dst
+    Filters.filter dst
 
 let gen_chars () =
   let fonts = get_fonts_paths () in
   let font_array = Array.make (Array.length fonts) [||] in
     for i = 0 to (Array.length fonts) - 1 do
-      let font = Sdlttf.open_font ("fonts/" ^ fonts.(i)) 26 in
-        font_array.(i) <- Array.init (String.length chars)
-            (fun n -> (chars.[n], make_image font (Char.escaped chars.[n])))
+      let font = Sdlttf.open_font ("fonts/" ^ fonts.(i)) 20 in
+      let arr = Blocks.expand_full_block
+                  (Blocks.extract (make_image font chars_separated)) in
+        font_array.(i) <- Array.concat (Array.to_list arr.(0))
     done;
     font_array
 
-let train_mlp chr surface mlp =
-  let surface = Filters.image2grey surface in
-  let mat = Filters.binarize surface in
-  let corresp = Resize.local_moy mat 5 5 in
-    mlp#learn corresp chr
+let train_network chr mat network =
+    network#learn mat chr
 
-let train () =
-  let mlp = 
-    if Sys.file_exists "nn.bin" then
-      Mlp.from_file "nn.bin"
-    else
-      begin
-        let arr = Array.init (String.length chars) (fun n -> chars.[n]) in
-        let mlp = new Mlp.t [|25; 69; 42; (String.length chars)|] arr in
-          mlp
-      end
-  in
-  let fonts = gen_chars () in
-    for k = 0 to 5 do
-      Printf.printf "iteration #%3d" k;
-      for i = 0 to (Array.length fonts) - 1 do
-        for j = 0 to (Array.length fonts.(i)) - 1 do
-          let (chr, surface) = fonts.(i).(j) in
-            train_mlp chr surface mlp
-        done;
-      done
-    done;
-    mlp#save "nn.bin"
+let train n =
+  let network = new Network.network in
+    if Sys.file_exists "network.bin" then
+      network#from_file "network.bin";
+    let fonts = gen_chars () in
+      for k = 0 to n do
+        Printf.printf "iteration #%3d…\n" k;
+        for i = 0 to (Array.length fonts) - 1 do
+          for j = 0 to (Array.length fonts.(i)) - 1 do
+              let (chr, surface) = chars.[j], fonts.(i).(j) in
+                (*Image.show_matrix surface (Image.display_for_matrix surface);
+                Image.wait_key ();*)
+                train_network chr surface network
+          done
+        done
+      done;
+      network#to_file "network.bin"
 
