@@ -41,7 +41,7 @@ let rotate mat angle =
               mat2.(x).(y) <- px;
       done
     done;
-    mat2
+    Filters.rlsa mat2
 
 (** Count the pixels of the given row from start to end *)
 let pixels_count mat row st en =
@@ -188,7 +188,3 @@ let trace_histogram mat angle =
       trace_ray mat (min_y + i * sample) dx dy
     done;
     mat
-
-
-
-
