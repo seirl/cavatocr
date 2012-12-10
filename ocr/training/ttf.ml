@@ -31,13 +31,39 @@ let gen_chars () =
     for i = 0 to (Array.length fonts) - 1 do
       let font = Sdlttf.open_font ("fonts/" ^ fonts.(i)) 26 in
         font_array.(i) <- Array.init (String.length chars)
-                            (fun n -> make_image font (Char.escaped chars.[n]))
+            (fun n -> (chars.[n], make_image font (Char.escaped chars.[n])))
     done;
     font_array
 
 let train_mlp chr surface mlp =
   Filters.image2grey surface;
   let mat = Filters.binarize surface in
-  let corresp = Resize.local_moy mat in
+  let corresp = Resize.local_moy mat 5 5 in
+  let img = Image.surface_of_moy corresp 5 5 in
+    Image.show img (Image.display_for_image img);
+    Image.wait_key ();
     mlp#learn corresp chr
+
+let train () =
+  let mlp = 
+    if Sys.file_exists "nn.bin" then
+      Mlp.from_file "nn.bin"
+    else
+      begin
+        let arr = Array.init (String.length chars) (fun n -> chars.[n]) in
+        let mlp = new Mlp.t [|25; 69; 42; (String.length chars)|] arr in
+          mlp
+      end
+  in
+  let fonts = gen_chars () in
+    for k = 0 to 50 do
+      Printf.printf "iteration #%3d" k;
+      for i = 0 to (Array.length fonts) - 1 do
+        for j = 0 to (Array.length fonts.(i)) - 1 do
+          let (chr, surface) = fonts.(i).(j) in
+            train_mlp chr surface mlp
+        done;
+      done
+    done;
+    mlp#save "nn.bin"
 

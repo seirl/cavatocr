@@ -75,3 +75,14 @@ let surface_of_matrix matrix =
 (** Display the corresponding SDL surface of a bool matrix on the dst display *)
 let show_matrix mat dst =
   show (surface_of_matrix mat) dst
+
+let surface_of_moy arr dw dh =
+  let surface = create_surface (dw * 1) (dh * 1) in
+  let tr x = let x = truncate (255. *. x) in (x,x,x) in
+    for x = 0 to Array.length arr - 1 do
+      Printf.printf "%f\n" arr.(x);
+      let c = tr arr.(x) in
+      let (i, j) = (x mod dw, x - (x mod dw) / dw) in
+    (*        Sdlvideo.put_pixel_color surface i j c; *) ()
+    done;
+    surface

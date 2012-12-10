@@ -18,12 +18,12 @@ URL_IMAGES := http://infoprepa.epita.fr/ImagesOCR/
 URL_FONTS := http://cavatocr.serialk.fr/downloads/fonts
 RSYNC := rsync --rsh='ssh' -vPtz
 
-.PHONY: all test clean gui syntax get_images get_fonts doc
+.PHONY: all test clean gui syntax get_images get_fonts doc training
 
 all: main.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
 
-training: training.ml get_fonts
+training: training.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} training.$(BUILD)
 
 test: test.ml

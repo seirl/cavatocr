@@ -16,15 +16,19 @@ let resize mat nw nh =
 let local_moy mat div_w div_h =
   let ow, oh = Matrix.get_dims mat in
   let part_w, part_h = (ow / div_w, oh / div_w) in
-  let moymat = Matrix.make div_w div_h 0.0 in
+  let moymat = Array.make (div_w * div_h) 0.0 in
     for i = 0 to div_w - 1 do
       for j = 0 to div_h - 1 do
         let sum = ref 0 in
         for x = i * part_w to i * (part_w + 1) - 1 do
           for y = j * part_h to j * (part_h + 1) - 1 do
-            sum := !sum + Tools.int_of_bool mat.(x).(y)
+            sum := !sum + (if x >= ow || y >= oh then
+                             0
+                           else
+                             Tools.int_of_bool mat.(x).(y))
           done
         done;
-        moymat.(i).(j) <- (float !sum) /. (float (part_w * part_h))
+        moymat.(i + j * div_w) <- (float !sum) /. (float (part_w * part_h))
       done
-    done
+    done;
+    moymat

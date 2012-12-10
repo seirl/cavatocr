@@ -1,49 +1,175 @@
 let _ = Random.self_init ()
+let is_nan x = x <> x
 
-let fob = function true -> 0.95 | false -> 0.05
+let fob = function true -> 1. | false -> 0.
+and bof x = x > 0.5
 
-class t sizes chars =
+class ['a] weights_matrix x y (init:'a) =
+object (s)
+  val pixels = Array.make_matrix x y init
+  val dim_X = x
+  val dim_Y = y
+
+  method get_X = dim_X
+  method get_Y = dim_Y
+  method set x y p = pixels.(x).(y) <- p
+  method get x y = pixels.(x).(y)
+
+  method map f =
+    for y=0 to dim_Y - 1 do
+      for x=0 to dim_X - 1 do
+        s#set x y (f x y (s#get x y))
+      done;
+    done
+
+  method iter (f:int -> int -> 'a -> unit) =
+    for y=0 to dim_Y-1 do
+      for x=0 to dim_X-1 do
+        f x y (s#get x y)
+      done;
+    done
+end
+
+class layer in_size size f f' rate momentum =
+object(self: 'layer)
+
+  val weights = new weights_matrix in_size size 0. 
+  val prods = Array.make size 0.
+  val outputs = Array.make size 0.
+  val deltas = Array.make size 0.
+  val prev_err = Array.make size 0.
+  val mutable input = Array.make in_size 0.
+
+  method get_outputs = outputs
+  method get_deltas = deltas
+  method get_weights = weights
+  method get_size = size
+
+  initializer
+    weights#map (fun _ _ _ -> (Random.float 2.) -. 1.)
+
+  method error expected =
+    let sum = ref 0. and sqr x = x*.x in
+      for i = 0 to size - 1 do
+        sum := !sum +. sqr ((fob expected.(i)) -. outputs.(i));
+        if is_nan !sum then Printf.printf "%f + sqr( %f - %f )\n" !sum (fob expected.(i)) outputs.(i)
+      done;
+      !sum /. 2.
+
+  method process inp =
+    input <- inp;
+    for i = 0 to size - 1 do
+      for j = 0 to in_size - 1 do
+        prods.(i) <- prods.(i) +.  input.(j) *. weights#get j i;
+        if is_nan prods.(i) then Printf.printf "prods: %f + %f * %f\n" prods.(i) (input.(j)) (weights#get j i)
+      done;
+      outputs.(i) <- f prods.(i);
+      if is_nan outputs.(i) then Printf.printf "%f %f\n" prods.(i) (f prods.(i))
+    done
+
+  method calc_deltas_first expected =
+    for i = 0 to size - 1 do
+      deltas.(i) <- (fob expected.(i)) -. outputs.(i);
+    done;
+
+  method calc_deltas (prev_lay: 'layer) =
+    for i = 0 to size - 1 do
+      for j = 0 to prev_lay#get_size - 1 do
+      deltas.(i) <- deltas.(i) +. ((prev_lay#get_weights)#get i j)
+                                *. (prev_lay#get_deltas).(j);
+      done;
+    done;
+
+  method update_weights =
+    let err = ref 0. in
+    for j = 0 to size - 1 do
+      err := 0.;
+      for i = 0 to in_size - 1 do
+        err := rate *. deltas.(j) *. input.(i) *. (f' prods.(j)); 
+        if is_nan !err then Printf.printf "err: %f *. %f *. %f *. %f (%f)\n" rate deltas.(j) input.(i) (f' prods.(j)) prods.(j);
+        let w = weights#get i j in
+        weights#set i j ((weights#get i j) +. !err +. momentum *. prev_err.(j));
+        if is_nan (weights#get i j) then Printf.printf "%f + %f + %f + %f\n" w !err momentum prev_err.(j)
+      done;
+      prev_err.(j) <- !err;
+    done
+
+method update_weights_first =
+    let err = ref 0. in
+    for j = 0 to size - 1 do
+      err := 0.;
+      for i = 0 to in_size - 1 do
+        err := rate *. deltas.(j) *. input.(i);
+        weights#set i j ((weights#get i j) +. !err +. momentum *. prev_err.(j));
+        if is_nan (weights#get i j) then Printf.printf "%f + %f + %f * %f" (weights#get i j)  !err  momentum  prev_err.(j)
+      done;
+      prev_err.(j) <- !err;
+    done
+
+end
+
+
+class t sizes (chars: char array) =
 object(self)
 
   val size = Array.length sizes
-  val sigmoid = function x -> 1. /. (1.+.exp (-.x))
-  val d_sigmoid = function x ->
-        let e = exp (-.x /. 0.4) in
-          e /. (0.4 *. ((1. +. e)**2.))
-  
-  (** Learning rate *)
-  val r = 0.1
+  val sigmoid = fun x -> 1. /. (1. +. exp (-. x /. 0.4))
+  val d_sigmoid = fun x ->
+    let x = (max x (-.250.)) in
+    let x = (min x 290.) in
+    let e = exp (-.x /. 0.4) in
+      e /. (0.4 *. ((1. +. e)**2.))
+  val r = 0.2 (* taux d'aprentissage *)
+  val m = 0.2 (* inertie d'apentrentissage *)
+  val mutable layers = [||]
 
-  (** Learning intertia *)
-  val m = 0.2
+  initializer
+      layers <- Array.init (size - 1)
+            (fun i -> new layer sizes.(i) sizes.(i+1) sigmoid d_sigmoid r m);
 
-  val layers = Array.init self#size
-            (fun i -> new layer sizes.(i) sizes.(i+1) sigmoid d_sigmoid r m)
+  method print_output =
+    let str = ref "[" and out = layers.(size - 2)#get_outputs in
+      for i = 0 to sizes.(size - 1) - 2 do
+        str := !str ^ (string_of_float out.(i)) ^ ";";
+      done;
+      str := !str ^ (string_of_float  out.(sizes.(size - 1) - 1)) ^ "]\n";
+      print_string "Output MLP:\n";
+      print_string !str
 
   method process input =
+    (* print_string "Input:\n"; *)
     layers.(0)#process input; 
-    for i = 1 to size - 1 do
-      layer.(i)#process (layer.(i-1)#get_output);
-    done;
+    for i = 1 to size - 2 do
+      layers.(i)#process (layers.(i-1)#get_outputs);
+    done
+    (* self#print_output *)
 
   method find_char =
-    let out = layer.(size - 1)#get_output in
-    let i = ref 0 in
-    while not out.(i) && i < sizes.(size - 1) do
-      incr i;
-    done;
-    chars.(i)
+    let out = layers.(size - 2)#get_outputs in
+    let index = ref 0 and max = ref 0. in
+      for i = 0 to sizes.(size - 1) - 1 do
+        if out.(i) > !max then
+          begin
+          max := out.(i);
+          index := i;
+          end;
+      done;
+    chars.(!index)
 
   method out_from_char c =
-    Array.init (Array.length chars) (fun _ i -> fob (c = chars.(i)))
+    Array.init (Array.length chars) (fun i -> c = chars.(i))
 
-  method learn input output =
-    layers.(size - 1)#calc_errors_first output;
-    layers.(size - 1)#update_weights;
-    for i = size - 2 downto 0 do
-      layers.(i)#calc_error layers.(i + 1)#get_error;
+  method learn input output_c =
+    let output = self#out_from_char output_c in
+    self#process input;
+    layers.(size - 2)#calc_deltas_first output;
+    layers.(size - 2)#update_weights_first;
+    for i = size - 3 downto 0 do
+      layers.(i)#calc_deltas layers.(i + 1);
       layers.(i)#update_weights;
-    done
+    done;
+    Printf.printf "\nError: %f\nDetected: %c\n"
+      (layers.(size - 2)#error output) self#find_char
 
   method save path =
     let file = open_out path in
@@ -52,54 +178,9 @@ object(self)
 end
 
 
-class layer in_size size f f' rate momentum =
-object(self)
-
-  val neurons = Array.init size (fun _ -> new Neuron.t in_size)
-  val prods = Array.make size 0.
-  val outputs = Array.make size 0.
-  val errors = Array.make size 0.
-  val mutable input = Array.make in_size 0.
-
-  method get_output = outputs
-  method get_error = errors
-
-  method process inp =
-    input <- inp;
-    let aux n i =
-      let (p, o) = n#process input in
-        outputs.(i) <- o;
-        prods.(o) <- p
-    in Array.iteri neurons aux 
-
-  method calc_errors_first expected =
-    for i = 0 to size - 1 do
-      errors.(i) <- (f' prods.(i)) *. ((fob expected.(i)) -. output.(i));
-    done
-
-  method calc_errors prev_err =
-    for i = 0 to size - 1 do
-      errors.(i) <- (f' prods.(i)) *. (prod_err prev_err);
-    done
-
-  method prod_err err =
-    for i = 0 to size - 1 do
-      let (prod,_) = neurons.(i)#process err in
-        errors.(i) <- (f' prods.(i)) *. prod;
-    done
-
-  method update_weights =
-    for i = 0 to size - 1 do
-      neuron.(i)#new_weights rate momentum errors.(i) input
-    done
-
-  initializer
-    weights#map (fun _ -> (Random.float 2.) -. 1.)
-
-end
-
 let from_file path =
   let file = open_in path in
   let res = Marshal.from_channel file in
     close_in file;
     res
+
