@@ -21,16 +21,20 @@ type 'a t_block =
     mutable content: 'a
 }
 
+(** Get the content of a block *)
 let content_of_block ({id=_;l=_;r=_;t=_;b=_;content=i}) = i
 
+(** Get a simple block to start working with *)
 let sample_block t = {id=t;l=0;r=0;t=0;b=0;content=Matrix.make 0 0 false}
 
 let block_of_img ?l:(l=0) ?t:(t=0) img =
   let (w, h) = Matrix.get_dims img in
     {id=Image;l=0;r=w;b=h;t=0;content=img}
 
+(** Get the number of trues in a bool array *)
 let bool_sum = Array.fold_left (fun n b -> if b then n+1 else n) 0
 
+(** Get a row of pixel in a matrix *)
 let get_line i img =
   let (_,h) = Matrix.get_dims img in
       Array.map (fun col -> col.(h - 1 - i)) img
@@ -168,6 +172,7 @@ let get_chars (block: img_t t_block) =
     }
   end
 
+(** Get the histogram of lentght of whitespaces between characters *)
 let white_vhist line =
   let hist = Array.make (Array.length line - 1) 0 in
     begin
@@ -206,6 +211,7 @@ let moy_consecutive list_maxs =
     list_moy
 
 
+(** Extract words from a block where only lines and characters are extracted *)
 let get_words av_sep ({id=_;l=l;r=r;t=t;b=b;content=line}) =
   let current_word = ref [| |] in
   let words = ref [| |] in
@@ -254,6 +260,7 @@ let words_of_line line =
         get_words words_threshold line
     | _ -> failwith "words_of_line: moy_consecutive didn't return 2 elements"
 
+(** Extract lines, words and characters of an image *)
 let extract img =
   let w, h = Matrix.get_dims img in
   let chars = extract_chars img in
@@ -263,12 +270,13 @@ let extract img =
   content=Array.map (words_of_line) (chars.content)
  }
 
+(** Convert a fully extracted block (with lines, words en characters) to arrays
+  * *)
 let expand_full_block block =
   let lines = block.content in
   let words = Array.map content_of_block lines in
   let chars = Array.map (Array.map (Array.map content_of_block)) words in
     chars
-
 
 
 (* Well, an extracted image is "bool array array array array array array" :
