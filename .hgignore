@@ -10,6 +10,7 @@ test/
 test.ml
 test_images/
 fonts/
+*.bin
 
 .rbenv-version
 .bundle
