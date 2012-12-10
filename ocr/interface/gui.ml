@@ -47,7 +47,7 @@ let print_test () =
 let confirm _ =
   let dlg = GWindow.message_dialog
               ~message:"<b><big>Do you really want to leave ?</big>\n\n\
-                        Warning :\nall unsaved modifications will be lost </b>\n"
+                    Warning :\nall unsaved modifications will be lost </b>\n"
               ~parent:window
               ~destroy_with_parent:true
               ~use_markup:true
@@ -199,7 +199,7 @@ let extr () =
       [get_extract (!image)];
     text_window#show ();
     GMain.main ()
-  
+
 let extract =
   let button = GButton.button
                  ~label: "Extract"
