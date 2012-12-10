@@ -23,15 +23,6 @@ RSYNC := rsync --rsh='ssh' -vPtz
 all: main.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
 
-training: training.ml
-	$(OCAML) $(FLAGS) -Is ${DEPS} training.$(BUILD)
-
-test: test.ml
-	$(OCAML) $(FLAGS) -Is ${DEPS} test.$(BUILD)
-
-gui: interface/gui.ml
-	$(OCAML) $(FLAGS) -Is ${DEPS} interface/gui.$(BUILD)
-
 clean:
 	$(OCAML) -Is ${DEPS} -clean
 

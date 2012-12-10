@@ -24,11 +24,7 @@ let rotate file =
 
 let recognize_char mat = 
   let corr = Resize.local_moy mat 5 5 in
-  let mlp =
-    if Sys.file_exists "nn.bin" then
-      Mlp.from_file "nn.bin"
-    else
-      failwith "Neural network not found." in
+  let mlp = Mlp.from_file "nn.bin" in
     mlp#process corr;
     mlp#find_char
 

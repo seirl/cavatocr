@@ -53,7 +53,7 @@ let train () =
       end
   in
   let fonts = gen_chars () in
-    for k = 0 to 50 do
+    for k = 0 to 5 do
       Printf.printf "iteration #%3d" k;
       for i = 0 to (Array.length fonts) - 1 do
         for j = 0 to (Array.length fonts.(i)) - 1 do

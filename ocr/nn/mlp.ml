@@ -52,7 +52,6 @@ object(self: 'layer)
     let sum = ref 0. and sqr x = x*.x in
       for i = 0 to size - 1 do
         sum := !sum +. sqr ((fob expected.(i)) -. outputs.(i));
-        if is_nan !sum then Printf.printf "%f + sqr( %f - %f )\n" !sum (fob expected.(i)) outputs.(i)
       done;
       !sum /. 2.
 
@@ -61,10 +60,8 @@ object(self: 'layer)
     for i = 0 to size - 1 do
       for j = 0 to in_size - 1 do
         prods.(i) <- prods.(i) +.  input.(j) *. weights#get j i;
-        if is_nan prods.(i) then Printf.printf "prods: %f + %f * %f\n" prods.(i) (input.(j)) (weights#get j i)
       done;
       outputs.(i) <- f prods.(i);
-      if is_nan outputs.(i) then Printf.printf "%f %f\n" prods.(i) (f prods.(i))
     done
 
   method calc_deltas_first expected =
@@ -86,10 +83,8 @@ object(self: 'layer)
       err := 0.;
       for i = 0 to in_size - 1 do
         err := rate *. deltas.(j) *. input.(i) *. (f' prods.(j)); 
-        if is_nan !err then Printf.printf "err: %f *. %f *. %f *. %f (%f)\n" rate deltas.(j) input.(i) (f' prods.(j)) prods.(j);
         let w = weights#get i j in
         weights#set i j ((weights#get i j) +. !err +. momentum *. prev_err.(j));
-        if is_nan (weights#get i j) then Printf.printf "%f + %f + %f + %f\n" w !err momentum prev_err.(j)
       done;
       prev_err.(j) <- !err;
     done
@@ -101,7 +96,6 @@ method update_weights_first =
       for i = 0 to in_size - 1 do
         err := rate *. deltas.(j) *. input.(i);
         weights#set i j ((weights#get i j) +. !err +. momentum *. prev_err.(j));
-        if is_nan (weights#get i j) then Printf.printf "%f + %f + %f * %f" (weights#get i j)  !err  momentum  prev_err.(j)
       done;
       prev_err.(j) <- !err;
     done
