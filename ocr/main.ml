@@ -15,12 +15,22 @@ let filter file = show (get_filter file)
 let get_rotate file =
   let filtered = get_filter file in
     Rotate.rotate filtered (Rotate.get_skew_angle filtered)
-let rotate file = show (get_rotate file)
 
+let rotate file =
+  let filtered = get_filter file in
+  let angle = Rotate.get_skew_angle filtered in
+    show (Rotate.rotate filtered angle);
+    show (Rotate.trace_histogram filtered angle)
 
-
-let recognize_char _ = (* FIXME seirl *)
-  'a'
+let recognize_char mat = 
+  let corr = Resize.local_moy mat 5 5 in
+  let mlp =
+    if Sys.file_exists "nn.bin" then
+      Mlp.from_file "nn.bin"
+    else
+      failwith "Neural network not found." in
+    mlp#process corr;
+    mlp#find_char
 
 let recognize_word word =
   let rec_array = Array.map recognize_char word in
@@ -42,17 +52,22 @@ let get_extract file =
     recognize_page expanded
 let extract file = print_endline (get_extract file)
 
+let train () =
+  Image.sdl_init ();
+  Ttf.train()
+
 let specs = 
   [
     ("--gui", Arg.Unit(main), "launch the user interface");
     ("--filter", Arg.String(filter), "Show the image after cleaning");
     ("--rotate", Arg.String(rotate), "Show the image cleaned and reorientated");
-    ("--extract", Arg.String(extract), "Print the recognized text")
+    ("--extract", Arg.String(extract), "Print the recognized text");
+    ("--train", Arg.Unit(train), "Train the neural network")
   ]
 
 let usage =
   Printf.sprintf
-    "Usage: %s --gui | --filter | --rotate | --extract"
+    "Usage: %s --gui | --filter | --rotate | --extract | --train"
     (Sys.argv.(0))
 
 let _ =

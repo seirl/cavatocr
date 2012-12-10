@@ -36,12 +36,9 @@ let gen_chars () =
     font_array
 
 let train_mlp chr surface mlp =
-  Filters.image2grey surface;
+  let surface = Filters.image2grey surface in
   let mat = Filters.binarize surface in
   let corresp = Resize.local_moy mat 5 5 in
-  let img = Image.surface_of_moy corresp 5 5 in
-    Image.show img (Image.display_for_image img);
-    Image.wait_key ();
     mlp#learn corresp chr
 
 let train () =
