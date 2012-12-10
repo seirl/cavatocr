@@ -1,3 +1,7 @@
+let image = ref (Image.create_surface 0 0)
+let mat = ref (Matrix.make 0 0 false)
+
+
 let window =
   ignore (GMain.init ());
   let window = GWindow.window
@@ -29,6 +33,7 @@ let view = GPack.vbox ~packing:vbox#add ()
 let may_view btn () =
   match btn#filename with
       Some n ->
+        image := Image.load n;
         ignore (GMisc.image
                   ~file: n
                   ~packing:view#add())
@@ -122,20 +127,81 @@ let bbox = GPack.button_box `HORIZONTAL (*Box of bottom interface*)
   ~border_width:2
   ~packing:(vbox#pack ~expand:false) ()
 
+let show img =
+  let display = Image.display_for_matrix img in
+    begin
+      Image.show_matrix img display;
+      Image.wait_key ();
+    end
+
 (** The preprocessing button*)
+let preprocess () =
+  mat := Filters.filter (!image)
+(*
 let preprocessing =
   let button = GButton.button
                  ~label: "Preprocessing"
                  ~packing: bbox#add()
-  in ignore(button#connect#clicked ~callback:(print_test));
+  in ignore (button#connect#clicked ~callback:(preprocess));
      button
+ *)
 
 (** The extraction button*)
+let text_window =
+  ignore (GMain.init ());
+  let wnd = GWindow.window ~width:150 ~height:100 () in
+  ignore (wnd#connect#destroy GMain.quit);
+  wnd
+
+let packing =
+  let hbox = GPack.hbox
+    ~spacing:5
+    ~border_width:5
+    ~packing:text_window#add () in
+  hbox#pack ~expand:false
+
+let extr () =
+  let get_filter file = Filters.filter (file) in
+
+  let get_rotate file =
+    let filtered = get_filter file in
+      Rotate.rotate filtered (Rotate.get_skew_angle filtered)
+  in
+  let recognize_char _ = (* FIXME seirl *)
+    'a'
+  in
+
+  let recognize_word word =
+    let rec_array = Array.map recognize_char word in
+    let rec_array = Array.map (Char.escaped) rec_array in
+      Array.fold_left (^) "" rec_array
+  in
+
+  let recognize_line line =
+    let rec_line = Array.map recognize_word line in
+      String.concat " " (Array.to_list rec_line)
+  in
+
+  let recognize_page page =
+    let rec_page = Array.map recognize_line page in
+      String.concat "\n" (Array.to_list rec_page)
+  in
+  let get_extract file =
+    let rotated = get_rotate file in
+    let extracted = Blocks.extract rotated in
+    let expanded = Blocks.expand_full_block extracted in
+      recognize_page expanded
+  in
+    List.iter (fun text -> ignore (GMisc.label ~packing ~text ()))
+      [get_extract (!image)];
+    text_window#show ();
+    GMain.main ()
+  
 let extract =
   let button = GButton.button
                  ~label: "Extract"
                  ~packing: bbox#add()
-  in ignore (button#connect#clicked ~callback:(print_test));
+  in ignore (button#connect#clicked ~callback:(extr));
      button
 
 (* The button to quit*)
