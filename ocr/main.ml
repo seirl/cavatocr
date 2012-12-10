@@ -93,7 +93,7 @@ let read filename =
 
 let split s = Array.of_list (Str.split (Str.regexp " ") s)
 let dico = read "dico_fr.txt"
-let guess recognized file =
+let guess file =
   let recognized = split (get_extract file) in
   let rec_size = Array.length recognized - 1 in
   let dico_size = Array.length (dico)  - 1 in
