@@ -18,7 +18,7 @@ URL_IMAGES := http://infoprepa.epita.fr/ImagesOCR/
 URL_FONTS := http://cavatocr.serialk.fr/downloads/fonts
 RSYNC := rsync --rsh='ssh' -vPtz
 
-.PHONY: all test clean gui syntax get_images get_fonts doc training
+.PHONY: all test clean gui syntax get_images get_fonts doc training doc_deploy
 
 all: main.ml
 	$(OCAML) $(FLAGS) -Is ${DEPS} main.$(BUILD)
@@ -40,6 +40,8 @@ get_images:
 doc:
 	$(OCAML) $(FLAGS) -Is ${DEPS} ocr.docdir/index.html
 	sed -i 's/White/transparent/' ocr.docdir/style.css
+
+doc_deploy: doc
 	$(RSYNC) -r ocr.docdir/* root@serialk.fr\:/srv/http/cavatocr/doc/
 	$(MAKE) clean
 	
