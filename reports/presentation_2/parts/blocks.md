@@ -122,6 +122,9 @@ différents, comme ce 'n' par exemple:
 \caption{Characters detection exemple -- char merge}
 \end{figure}
 
+C'est maintenant un problème résolu grâce un réglage plus intelligent et
+auto-adaptatif du seuil.
+
 ### Détection des mots
 
 > *Il existe un art, ou plutôt un truc, pour voler. Le truc est d'apprendre à se
