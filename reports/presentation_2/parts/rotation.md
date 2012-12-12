@@ -87,3 +87,12 @@ Si les coordonées obtenues ne dépassent pas les limites de l'image d'origine,
 alors on copie le pixel d'origine dans le pixel correspondant sur l'image de
 sortie.
 
+
+### Optimisation
+
+Nous avons optimisé notre algorithme de base utilisé lors de la première
+soutenance. En effet, la détection de l'angle se faisait grâce à une succession
+de rotations et à un tracé droit de l'histogramme. L'optimisation se fait grâce
+à un tracé de l'histogramme selon un certain angle, et donne des résultats très
+satisfaisants (division par un facteur 100 du temps de calcul sur de grosses
+images).
