@@ -17,4 +17,3 @@ Nous en avons appris beaucoup avec ce projet et avec un regard critique sur
 notre travail, nous somme maintenant capable de progresser de manière plus
 efficace.
 
-![CavatOCR : Avant --- Après](images/biatch8.jpg)

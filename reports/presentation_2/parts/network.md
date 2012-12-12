@@ -112,3 +112,4 @@ w_{ij}^{(n)}(t-1)$$
 
 avec $\alpha$ un paramètre compris entre 0 et 1.0.
 
+![CavatOCR : Avant --- Après](images/biatch8.jpg)
