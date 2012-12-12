@@ -272,3 +272,5 @@ Lors de nos travaux de traitement d'image nous avons eu l'idée de créer un
 filtre. Ce filtre ne porte pas de nom car il est de notre propre création. Cet
 algorithme permet de faire ressortir le contour des caractères en noir à la
 manière d'un laplacien. Cela donne de très bons résultats.
+
+![CavatOCR, le compagnon idéal, en toutes circonstances.](images/biatch4.jpg)

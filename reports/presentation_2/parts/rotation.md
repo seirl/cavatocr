@@ -96,3 +96,5 @@ de rotations et à un tracé droit de l'histogramme. L'optimisation se fait grâ
 à un tracé de l'histogramme selon un certain angle, et donne des résultats très
 satisfaisants (division par un facteur 100 du temps de calcul sur de grosses
 images).
+
+![CavatOCR, de l'émotion garantie.](images/biatch5.jpg)

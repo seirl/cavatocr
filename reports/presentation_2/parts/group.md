@@ -51,3 +51,4 @@ comprendre les principes algorithmiques des choses. Dans ce projet il s'est
 chargé du prétraitement de l'image car cette tâche semblait algorithmiquement
 interressante et ne nécessitait pas de grandes connaissances concernant SDL.
 
+![Avec CavatOCR, je me sens libérée.](images/biatch3.jpg)
