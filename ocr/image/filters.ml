@@ -187,17 +187,123 @@ let fixseuil imageBw x y =
     (1. +. 0.2 *. ((ecartype imageBw x y) /. 128.) -. 1.)
   )
 
+<<<<<<< local
+let max image_grey x y =
+let table = array.make 9 0 in 
+          table.(0) <- fst (Sdlvideo.get_pixel_color image_grey x y);
+          table.(1) <- fst (Sdlvideo.get_pixel_color image_grey (x-1) (y-1));
+          table.(2) <- fst (Sdlvideo.get_pixel_color image_grey (x) (y-1));
+          table.(3) <- fst (Sdlvideo.get_pixel_color image_grey (x+1) (y-1));
+          table.(4) <- fst (Sdlvideo.get_pixel_color image_grey (x-1) (y));
+          table.(5) <- fst (Sdlvideo.get_pixel_color image_grey (x+1) (y));
+          table.(6) <- fst (Sdlvideo.get_pixel_color image_grey (x-1) (y+1));
+          table.(7) <- fst (Sdlvideo.get_pixel_color image_grey (x) (y+1));
+          table.(8) <- fst (Sdlvideo.get_pixel_color image_grey (x+1) (y+1));
+array.fast sort (-) table;
+table.(8)
+=======
+>>>>>>> other
 
+<<<<<<< local
+let min image_grey x y =
+let table = array.make 9 0 in 
+          table.(0) <- fst (Sdlvideo.get_pixel_color image_grey x y);
+          table.(1) <- fst (Sdlvideo.get_pixel_color image_grey (x-1) (y-1));
+          table.(2) <- fst (Sdlvideo.get_pixel_color image_grey (x) (y-1));
+          table.(3) <- fst (Sdlvideo.get_pixel_color image_grey (x+1) (y-1));
+          table.(4) <- fst (Sdlvideo.get_pixel_color image_grey (x-1) (y));
+          table.(5) <- fst (Sdlvideo.get_pixel_color image_grey (x+1) (y));
+          table.(6) <- fst (Sdlvideo.get_pixel_color image_grey (x-1) (y+1));
+          table.(7) <- fst (Sdlvideo.get_pixel_color image_grey (x) (y+1));
+          table.(8) <- fst (Sdlvideo.get_pixel_color image_grey (x+1) (y+1));
+array.fast sort (-) table;
+table.(0)
+
+let seuil image_grey x y = 
+(min image_grey x y + max image_grey x y)/2
+
+
+=======
+>>>>>>> other
 let binarize image_grey =
   let (w, h) = Image.get_dims image_grey in
   let imageBin = Matrix.make w h false in
+<<<<<<< local
+    for x = 1 to w - 2 do
+      for y = 1 to h - 2 do
+        imageBin.(x).(y) <- (fst (Sdlvideo.get_pixel_color image_grey x y)) <
+                                    seuil image_grey x y 
+=======
     for x = 0 to w - 1 do
       for y = 0 to h - 1 do
         imageBin.(x).(y) <-
         (fst (Sdlvideo.get_pixel_color image_grey x y)) < 180
+>>>>>>> other
       done;
     done;
     imageBin
 
+<<<<<<< local
+ 
+
+let binarize_sauvola imageBw =
+  let (w,h) = Image.get_dims imageBw in
+  let mat = Matrix.make w h false in
+    for y = 1 to h-2 do
+      for x = 1 to w-2 do
+        mat.(x).(y) <- (fst(Sdlvideo.get_pixel_color imageBw x y) < fixseuil
+                              imageBw x y)
+      done
+    done;
+    mat
+
+(* bin by JERENY*)
+let average matrix x y boxSize =
+        let sigma = ref 0 in
+        for i = x to x + boxSize do
+                for j = y to y + boxSize do
+                        let (grey,_,_) = matrix.(x).(y) in
+                        sigma := !sigma + grey
+                done
+        done;
+        !sigma / (boxSize * boxSize)
+
+let stdDeviation matrix x y boxSize average =
+        let sigma = ref 0 in
+        for i = x to x + boxSize do
+                for j = y to y + boxSize do
+                        let (grey,_,_) = matrix.(x).(y) in
+                        sigma := !sigma + (grey - average) * (grey - average)
+                done
+        done;
+        sqrt((1. /. (float boxSize *. float boxSize)) *. float !sigma)
+        
+
+let findThreshold pic x y boxSize =
+        let m = average pic (x - boxSize / 2) (y - boxSize / 2) boxSize in
+        let e = stdDeviation pic (x - boxSize / 2) (y - boxSize / 2) boxSize m in
+        int_of_float(float m *. (1. +. 0.2 *. ((e /. 128.) -. 1.)))
+
+let toBinPicture greyPic =
+        let binMat = Array.make_matrix (Array.length greyPic) (Array.length
+        greyPic.(0)) false and boxSize = 14 in
+
+        (*let threshold = findGeneralLimit greyPic in*)
+        (*let threshold = 127 in*)
+        for x = boxSize / 2 to Array.length greyPic - 1 - boxSize / 2 do
+                for y = boxSize / 2 to Array.length greyPic.(x) - 1 - boxSize / 2 do
+                        (*let threshold = findThreshold greyPic x y boxSize*)
+                        let threshold = average greyPic (x - boxSize / 2) (y - boxSize / 2)
+                        boxSize and (brightness,_,_) = greyPic.(x).(y) in
+(*                      Printf.printf "%d " threshold;*)
+                        if brightness < threshold then
+                                binMat.(x).(y) <- false
+                        else
+                                binMat.(x).(y) <- true
+                done
+        done;
+        binMat
+=======
 let filter img =
   binarize (image2grey img)
+>>>>>>> other
