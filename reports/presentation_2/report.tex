@@ -8,6 +8,7 @@
 \usepackage{array}
 \usepackage{graphicx}
 \usepackage{tikz}
+\usepackage{lastpage}
 
 \newcommand{\subtitle}{Rapport de soutenance II}
 
@@ -20,11 +21,10 @@
 \LARGE{\textbf{\subtitle}}
 \vspace{1cm}
 
-\large{\textsf{
-Antoine `serialk` \bsc{Pietri} \\
-Paul `Dettorer` \bsc{Hervot} \\
-Stéphane `hibiscus` \bsc{Lefebvre} \\
-Thomas `H2oWalker` \bsc{Kostas}}}
+\large{\textsf{Antoine \`serialk\` \bsc{Pietri} \\
+Paul \`Dettorer\` \bsc{Hervot} \\
+Stéphane \`hibiscus\` \bsc{Lefebvre} \\
+Thomas \`H2oWalker\` \bsc{Kostas}}}
 \vspace{2cm}
 
 \large{\textsf{Projet d'InfoSpé --- EPITA}}
@@ -49,6 +49,35 @@ Cette page est laissée intentionnellement vide.
 \section{Présentation du projet}
 \input{parts/project}
 
+\newpage
+\section{Répartition des tâches}
+\subsection{Filtres de pré-traitement de l'image}
+\input{parts/preprocessing}
+\newpage
+\subsection{Détection de l'inclinaison et rotation}
+\input{parts/rotation}
+\newpage
+\subsection{Détection des blocs}
+\input{parts/blocks}
+\newpage
+\subsection{Interface graphique}
+\input{parts/gui}
+\newpage
+\subsection{Réseau de neurones}
+\input{parts/network}
+\newpage
+\section{Environnement de travail}
+\subsection{Site web}
+\input{parts/website}
+\newpage
+\subsection{Channel IRC}
+\input{parts/irc}
+\newpage
+\subsection{Bitbucket}
+\input{parts/bitbucket}
+\newpage
+\section{Récit de la réalisation}
+\input{parts/recit}
 \newpage
 \section{Conclusion}
 \input{parts/conclusion}

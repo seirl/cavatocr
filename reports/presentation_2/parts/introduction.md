@@ -1,0 +1,3 @@
+Ce rapport de \pageref{LastPage} pages présente le projet CavatOCR, le groupe
+en charge de sa réalisation, la réalisation du projet elle-même, les
+différentes techniques utilisées…
