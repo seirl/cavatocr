@@ -132,8 +132,15 @@ auto-adaptatif du seuil.
 >
 > -- Le Guide Du Voyageur Galactique
 
-FIXME
+Le minimum de détection de mise en page est bien évidemment de reconnaitre le
+début et la fin de chaque mots.
 
+Nous utilisons pour ça une fois de plus la bonne vielle technique de
+l'histogramme. Cette fois, c'est le nombre d'espace entre chaque caractères que
+nous étudions. Un algorithme digne d'un exercice de prologin détecte les deux
+espacements les plus répétés dans l'histograme, nous en déduisont que le plus
+grand est l'espacement général des caractère. Il suffit donc de placer une fin
+et un début de mot à chaque espace proche de celui-ci.
 
 #### Détecter les zones de texte
 
@@ -141,4 +148,18 @@ FIXME
 >
 > -- George Abitbol
 
-FIXME
+La puissance d'ocaml se révèle dans cette partie: la sélection des zones de
+l'image contenant du texte se fait via un principe récursif. Prenons l'exemple
+de cette image :
+
+![text avec image](images/text_img.jpg)
+
+Avce notre algorithme de détection des caractères, l'image entière sera reconnue
+comme un gros caractère. Plus intéressant encore, si une grande ligne verticale
+parcour l'image, elle sera reconnue comme un caractère mais toutes les lignes
+qu'elle occupe n'en feront qu'une, notre algorithme ne trouvera pas de caractère
+dans ce méli-mélo de ligne et tout le block (sans la ligne parasite) sera
+interprêté comme un caractère. Nous faisons alors la moyenne de la taille de
+tous les caractères de l'image, un caractère plus grand que cette moyenne sera
+sans aucun doute un faux, nous relançons alors la détection dedans, ainsi le
+block parasité sera de nouveau analysé, correctement cette fois.
