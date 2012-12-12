@@ -15,7 +15,6 @@ Voici la liste des commits que nous avons envoyé sur bitbucket :
 * report: preprocessing images
 * report: preprocessing almost finished
 * report: touch empty parts
-* report: blockst: add some bullshit
 * added Mareo, Kido_Soraki, nurelin, underflow and Zeletochoy.
 * added irc, environnement, network
 * report: blocks part almost fished
