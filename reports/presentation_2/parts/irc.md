@@ -1,4 +1,4 @@
-Notre premier vecteur de lien social au sein du groupe fut notre channel IRC.
+Notre premier vecteur de lien social au sein du groupe fut notre salon IRC.
 Au départ, il était destiné à servir les communications entre les membres du
 groupe. Nous avons donc tout naturellement décidé de le créer sur le réseau où
 se trouve le salon de discussion officiel de l'Epita, RezoSup

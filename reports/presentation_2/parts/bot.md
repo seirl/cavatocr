@@ -18,7 +18,7 @@ plus courte.
 
 #### Message d'arrivée
 
-Quand notre bot se connecte sur notre canal de discussion, celui-ci relance la
+Quand notre bot se connecte sur notre salon de discussion, celui-ci relance la
 motivation de chacun grace à une phrase aléatoire tirée d'une référence commune
 : Kaeloo (qui est d'ailleurs le nom du bot).
 
@@ -26,7 +26,7 @@ motivation de chacun grace à une phrase aléatoire tirée d'une référence com
 
 La fonctionalité la plus intéressante que nous ayons ajouté à ce bot l'annonce
 des commit. Celui-ci vérifie régulièrement sur notre dépot les derniers commits
-et, s'il en repère un nouveau, l'annonce sur le canal en donnant le nom de
+et, s'il en repère un nouveau, l'annonce sur le salon en donnant le nom de
 l'auteur, le hash de la version et le début du message de commit. Ceci nous
 permet de nous synchroniser efficacement.
 
