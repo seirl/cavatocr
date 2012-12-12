@@ -12,10 +12,18 @@ Nous avons fait le choix d'utiliser la librairie SDL pour le traitement de
 notre image et toute les opération qui suive celui-ci. Nous avons choisi cette
 bibliothèque car elle était bien documentée et car nous avions appris à la
 manipuler en TP.
- 
-Ce choix a aussi été aussi motivé par le fait que la documention presente sur internet est assez complete.
-En effet c'est une bibliothèque très utilisée dans le monde de la création d'applications multimédias en deux dimensions comme les jeux vidéo, les démos graphiques, les émulateurs, etc. Sa simplicité, sa flexibilité, sa portabilité et surtout sa licence GNU LGPL contribuent à son grand succès. Elle est de plus considérée comme un outil suffisamment simple, et est souvent conseillée aux programmeurs débutants pour commencer dans le monde de la programmation multimédia. 
-![Logo](images/SDL_logo.jpg)
+
+Ce choix a été aussi motivé par le fait que la documention presente sur
+internet est assez complete.  En effet c'est une bibliothèque très utilisée dans
+le monde de la création d'applications multimédias en deux dimensions comme les
+jeux vidéo, les démos graphiques, les émulateurs, etc. Sa simplicité, sa
+flexibilité, sa portabilité et surtout sa licence GNU LGPL contribuent à son
+grand succès. Elle est de plus considérée comme un outil suffisamment simple, et
+est souvent conseillée aux programmeurs débutants pour commencer dans le monde
+de la programmation multimédia.
+
+![Logo](images/SDL_logo.png)
+
 ### Passage en niveau de gris
 
 L'image que l'on doit traiter est tout d'abord chargée sous forme d'une SDL
@@ -30,7 +38,11 @@ ce triplet par des valeurs spécifiques :
 - le vert est multiplié par $0.59$
 - le bleu est multiplié par $0.11$
 \vspace{0.5cm}
-Ces formules rendent compte de la manière dont l’œil humain perçoit les trois composantes, rouge, vert et bleu, de la lumière. Pour chacune d'elles, la somme des 3 coefficients vaut 1. On remarquera la forte inégalité entre ceux-ci : une lumière verte apparaît plus claire qu'une lumière rouge, et encore plus qu'une lumière bleue.
+Ces formules rendent compte de la manière dont l’œil humain perçoit les trois
+composantes, rouge, vert et bleu, de la lumière. Pour chacune d'elles, la somme
+des 3 coefficients vaut 1. On remarquera la forte inégalité entre ceux-ci : une
+lumière verte apparaît plus claire qu'une lumière rouge, et encore plus qu'une
+lumière bleue.
 \vspace{0.5cm}
 
 Une fois ces multiplications effectuées nous additionnons le résultat puis nous
@@ -46,6 +58,7 @@ par la suite et cela nous évite aussi la création de multiple SDL Surfaces.
 niveau de gris de chaque pixel. Si l'on créait un SDL surface contenant en
 chaque pixel (en rgb) les valeurs de la matrice obtenue, nous obtiendrons une
 image en niveau de gris.
+
 ![Image en niveau de gris](images/gris.jpg)
 
 ### Filtrage de l'image
@@ -88,9 +101,12 @@ trié et l'élément médian de cette énumération se trouvera en cinquième po
 du tableau. La valeur du pixel en position (x, y) sera alors fixé à cette valeur
 médiane.
 
-Ce filtrage est satisfaisant pour le traitement de texte. En effet les textes exploités par un logiciel de reconnaissance de caractére sont rarement de mauvaise qualité.
+Ce filtrage est satisfaisant pour le traitement de texte. En effet les textes
+exploités par un logiciel de reconnaissance de caractére sont rarement de
+mauvaise qualité.
 
 Nous pouvons ici observé une image filtré par ce procédé
+
 ![Image non filtré](images/bruit.jpg)
 ![Image filtré](images/filtre.jpg)
 
@@ -113,28 +129,32 @@ La fonction nous permettant de binariser l'image n'utilise pas de SDL Surface
 mais rend plutôt une matrice de booléens ("vrai" quand le pixel est blanc et
 "faux" quand il est noir).
 
-voici des exemples d´image binarisé par le biais de cette méthode 
+voici des exemples d'images binarisé par le biais de cette méthode
 
 ![Image en niveau de gris](images/prebin.jpg)!
+
 ![image binaire](images/postbin.jpg)
- 
+
 #### Méthode actuelle de Binarisation
 
-La méthode que nous utilisions pour la binarisation lors de la première soutenance ne nous satisfaisait pas dans la mesure oú elle n´était pas auto adaptative. En effet pour chaque image, peut importe  le niveau de gris de celle - ci, le seuil reste toujours le meme
-Nous avons donc du explorer de nouvelles methodes afin d'effectuer la binarisation de l´image.
+La méthode que nous utilisions pour la binarisation lors de la première soutenance ne nous satisfaisait pas dans la mesure où elle n'était pas auto adaptative. En effet pour chaque image, peut importe  le niveau de gris de celle - ci, le seuil reste toujours le meme
+Nous avons donc du explorer de nouvelles methodes afin d'effectuer la binarisation de l'image.
 Nos recherches nous ont orienté sur deux méthode differente, la binarisation par seuil locale et enfin la binarisation par le biais de l'algorithme de Sauvola.
+
 ##### Binarisation par seuil locale
-Le principe du seuillage local est d'utiliser un voisinage centré sur le pixel considéré pour déterminer quel seuil utiliser. Cette fenêtre peut avoir différentes tailles, souvent en fonction de la taille moyenne du texte dans le document. Le premier à proposer une technique donnant de bons résultats fut Bernsen en 1986. Plus formellement la formule peut s´écrire de cette manière :
-- $Soit P la largeur de la fenetre étudiée.$
-- $Soit Q la hauteur de la fenetre étudié.$
-- $Soit S(i,j) le seuil appliqué au pixel de coordonnées I,J.$
-- $Soit Max(i,j) la valeur du nivau de gris maximal centré dans une fenetre centré en i,j de Taille P * Q.$
-- $Soit Min(i,j) la valeur du nivau de gris minimal centré dans une fenetre centré en i,j de taille P * Q.$
+
+Le principe du seuillage local est d'utiliser un voisinage centré sur le pixel considéré pour déterminer quel seuil utiliser. Cette fenêtre peut avoir différentes tailles, souvent en fonction de la taille moyenne du texte dans le document. Le premier à proposer une technique donnant de bons résultats fut Bernsen en 1986. Plus formellement la formule peut s'écrire de cette manière :
+
+- Soit P la largeur de la fenetre étudiée.
+- Soit Q la hauteur de la fenetre étudié.
+- Soit S(i,j) le seuil appliqué au pixel de coordonnées I,J.
+- Soit Max(i,j) la valeur du niveau de gris maximal centré dans une fenetre centré en i,j de Taille P * Q.
+- Soit Min(i,j) la valeur du niveau de gris minimal centré dans une fenetre centré en i,j de taille P * Q.
 
 S(i,j) = (Max(i,j)+Min(i,j))/2
 
-Nous avons fait le choix d´implémenter ce filtre sur des fenetres carrées de 9 pixels.
-Pour réaliser cela il nous faut tout d´abord récuperer les pixels voisin du pixel étudié a savoir les pixels suivant : 
+Nous avons fait le choix d'implémenter ce filtre sur des fenetres carrées de 9 pixels.
+Pour réaliser cela il nous faut tout d'abord récuperer les pixels voisin du pixel étudié a savoir les pixels suivant : 
 
 - $(x, y)$
 - $(x-1, y-1)$
@@ -146,62 +166,87 @@ Pour réaliser cela il nous faut tout d´abord récuperer les pixels voisin du p
 - $(x, y+1)$
 - $(x+1, y+1)$
 
-Parmis ces pixels ,pour réussir a determiner le seuil, il nous faut en extraire celui ayant la plus petite valeur de niveau de gris et celui ayant la plus grande. Pour effectuer cela nous avons choisi de stocker les valeurs de niveaux de gris de ces pixels dans un vecteur de taille adapté et de trié ce dernier en ordre croissant. Ainsi, pour obtenir la valeur max et la valeur min nous n´avions plus qu 'a récuperer la valeur contenue dans la derniére et la premiére case de ce vecteur (respectivement).La moyenne de ces deux valeurs nous donnait alors le seuil à appliquer  au point de coordonées (i,j).Ce procédé est aplliqué à toute la natrice afin de fournir une matrice de booléen permettant de savoir si le pixel de coordonée (i,j) est noir ou blanc.
-Cependant pour les bords de la matrice nous avons été dans l´obligation d'utilisé la bianrisation par seuillage local. 
+Parmis ces pixels ,pour réussir a determiner le seuil, il nous faut en extraire
+celui ayant la plus petite valeur de niveau de gris et celui ayant la plus
+grande. Pour effectuer cela nous avons choisi de stocker les valeurs de niveaux
+de gris de ces pixels dans un vecteur de taille adapté et de trié ce dernier en
+ordre croissant. Ainsi, pour obtenir la valeur max et la valeur min nous
+n'avions plus qu 'a récuperer la valeur contenue dans la derniére et la premiére
+case de ce vecteur (respectivement).La moyenne de ces deux valeurs nous donnait
+alors le seuil à appliquer  au point de coordonées (i,j).Ce procédé est aplliqué
+à toute la natrice afin de fournir une matrice de booléen permettant de savoir
+si le pixel de coordonée (i,j) est noir ou blanc.  Cependant pour les bords de
+la matrice nous avons été dans l'obligation d'utilisé la bianrisation par
+seuillage local. 
 
 Exemple de binarisation par seuillage globale : 
 ![Image en niveau de gris](images/preloc.jpg)
 ![image binarisé par seuillage local](images/postloc.jpg)
 
-L'implémentation de cette méthode nous montre que les résultats obtenues sont loin d'etre ceux désiré.Cela peut s'expliquer par le fait que les images aux nombreux niveau de gris supportent mal ce type de filtre. Sur certain texte, obtenu par des scanners de mauvaise qualité nous obtenions des résultats identiques. Nous avons donc abandonné cette méthode mais jugions nécessaire de la présentcar elle a été une étape de notre cheminemet vers une binarisation de qualité
+L'implémentation de cette méthode nous montre que les résultats obtenues sont
+loin d'etre ceux désiré.Cela peut s'expliquer par le fait que les images aux
+nombreux niveau de gris supportent mal ce type de filtre. Sur certain texte,
+obtenu par des scanners de mauvaise qualité nous obtenions des résultats
+identiques. Nous avons donc abandonné cette méthode mais jugions nécessaire de
+la présentcar elle a été une étape de notre cheminemet vers une binarisation de
+qualité
 
 ##### Binarisation par la méthode de Sauvola 
-En 1986 Niblack proposa une méthode de binarisation. Cette méthode calcule un seuil local d´une manière beuacoup plus complique que celle présenté précédemment.Seul le calcule du seuil change a travers toute ces méthodes une fois le seuil local calculé on l'applique au pixel étudié pour determiner sa couleur dans l´image binaire.
+En 1986 Niblack proposa une méthode de binarisation. Cette méthode calcule un
+seuil local d'une manière beuacoup plus complique que celle présenté
+précédemment.Seul le calcule du seuil change a travers toute ces méthodes une
+fois le seuil local calculé on l'applique au pixel étudié pour determiner sa
+couleur dans l'image binaire.
 
 Formule de la méthode de Niblack:
 
-- $Soit P la largeur de la fenetre étudiée.$
-- $Soit Q la hauteur de la fenetre étudié.$
-- $Soit S(i, j) le seuil appliqué au pixel de coordonnées I, J.$
-- $Soit d(i, j) la valeur de l'écart type dans une fenetre centré en i, j de taille N*M.$
-- $Soit µ(i, j) la valeur des niveux de gris dans une fenetre centré en i, j de taille N*M.$
-- $Soit k une constant fixé à 0.2 $
+- Soit P la largeur de la fenetre étudiée.
+- Soit Q la hauteur de la fenetre étudié.
+- Soit S(i, j) le seuil appliqué au pixel de coordonnées I, J.
+- Soit d(i, j) la valeur de l'écart type dans une fenetre centré en i, j de taille N*M.
+- Soit u(i, j) la valeur des niveux de gris dans une fenetre centré en i, j de taille N*M.
+- Soit k une constant fixé à 0.2 $
 
-S(i, j) = µ(i, j)+ k * d(i, j)
+S(i, j) = u(i, j)+ k * d(i, j)
 
-En 2000 Sauvola apporte une amélioration à cette méthode permettant de la rendre plus précise. Grace à cette évolution la méthode devient aussi plus adaptéà la binarisation de texte
+En 2000 Sauvola apporte une amélioration à cette méthode permettant de la rendre
+plus précise. Grace à cette évolution la méthode devient aussi plus adaptéà la
+binarisation de texte
 
 Formule de la méthode de Sauvola:
 
-- $Soit P la largeur de la fenetre étudiée.$
-- $Soit Q la hauteur de la fenetre étudié.$
-- $Soit S(i, j) le seuil appliqué au pixel de coordonnées I, J.$
-- $Soit d(i, j) la valeur de l'écart type dans une fenetre centré en i, j de taille N*M.$
-- $Soit µ(i, j) la valeur des niveux de gris dans une fenetre centré en i, j de taille N*M.$
-- $Soit k une constant fixé à 0,2.$
-- $Soit une constante permettant d'ajuster la dynamique de l'écart type (fixé en général à 128).$ 
+- Soit P la largeur de la fenetre étudiée.
+- Soit Q la hauteur de la fenetre étudié.
+- Soit S(i, j) le seuil appliqué au pixel de coordonnées I, J.
+- Soit d(i, j) la valeur de l'écart type dans une fenetre centré en i, j de taille N*M.
+- Soit u(i, j) la valeur des niveux de gris dans une fenetre centré en i, j de taille N*M.
+- Soit k une constante fixé à 0,2.
+- Soit une constante R permettant d'ajuster la dynamique de l'écart type (fixé en général à 128).
 
-S(i, j) = µ(i, j)* (1+k * ((d(i, j)/R) - 1))
+S(i, j) = u(i, j)* (1+k * ((d(i, j)/R) - 1))
 
-Cette méthode beaucoup plus complexe que celle utilisée lors de la première soutenance est aussi beaucoup plus efficace malgré le fait que soit plus longue à appliquer.
-Ici nous utlisons la méthode de Sauvola dans des matrice de 5 * 5 pixels.
-On peut ici observer le résultat de cette méthode:
+Cette méthode plus complexe que celle utilisée lors de la première
+soutenance est aussi plus efficace malgré le fait que soit plus longue
+à appliquer.  Ici nous utlisons la méthode de Sauvola dans des matrice de 5 * 5
+pixels. On peut ici observer le résultat de cette méthode:
 
-![Texte avant la binarisation](Fix me)
-![Texte après la binarisation](FiX ME)
+![Texte avant la binarisation](images/presauvo.jpg)
 
+![Texte après la binarisation](images/postsauvo.png)
 
-
- 
 ### Filtre supplémentaire
 
-#### Filtre de lissage post rotation 
-Lorsque la rotation est effectué il arrive parfois que des pixels se retrouvent à des places qu´ils ne devraient pas occupés ¨naturellement¨(si l´image était droite).
-Pour remédier à ce soucis nous avons créer un filtre de lissage permettant d'avoir un meilleur rendu. Ce filtre prend une fenetre de 9 pixels dans l´image, si les pixels connexes au pixel etudié sont au moins quatres à etre noire alors ce pixels devient noir dans une nouvelle matrice(pour ne pas affecter le résultat sur les pixels voisins)ce principe s´applique ainsi a tout les pixels de l´image.
+#### Filtre de lissage post rotation
+Lorsque la rotation est effectué il arrive parfois que des pixels se retrouvent à des places qu'ils ne devraient pas occupés "naturellement"(si l'image était droite).
+Pour remédier à ce soucis nous avons créer un filtre de lissage permettant d'avoir un meilleur rendu. Ce filtre prend une fenetre de 9 pixels dans l'image, si les pixels connexes au pixel etudié sont au moins quatres à etre noire alors ce pixels devient noir dans une nouvelle matrice(pour ne pas affecter le résultat sur les pixels voisins)ce principe s'applique ainsi a tout les pixels de l'image.
+
 ![Ici le pixel centrale restera blanc](images/3.jpg)
+
 ![Ici le pixel centrale deviendra noire](images/8.jpg)
-![Texte avant lissage](FIX ME)
-![Texte après lissage](FIX ME)
+
+![Texte avant lissage](images/prelis.jpg)
+
+![Texte après lissage](images/postlis.png)
 
 #### Filtre de détection des contours de caractères
 Lors de nos travaux de traitement d'image nous avons eu l'idée de créer un
