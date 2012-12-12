@@ -4,6 +4,9 @@ PARTS := $(basename $(wildcard parts/*))
 MD := md
 LATEX := latex
 
+UP := rsync -rsh='ssh' -vPtz
+URL := root@serialk.fr:/srv/http/cavatocr/downloads/report2.pdf
+
 all: ${MD} ${LATEX}
 
 ${MD}: $(addsuffix .md,${PARTS})
@@ -13,9 +16,13 @@ ${MD}: $(addsuffix .md,${PARTS})
 
 ${LATEX}: ${REPORT}
 	pdflatex ${REPORT}
+	pdflatex ${REPORT}
 
 plan:
 	pandoc -o ${PLAN}.pdf ${PLAN}.md
+
+upload: all
+	${UP} report.pdf ${URL}
 
 clean:
 	rm -f *.aux
