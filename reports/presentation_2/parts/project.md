@@ -17,3 +17,4 @@ dictionnaire pour réduire le nombre d'erreurs potentielles.
 
 Ce projet est développé en Objective Caml avec les bibliothèques OcamlSDL et
 Ocaml-LablGtk2.
+

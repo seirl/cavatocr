@@ -29,3 +29,5 @@ des commit. Celui-ci vérifie régulièrement sur notre dépot les derniers comm
 et, s'il en repère un nouveau, l'annonce sur le canal en donnant le nom de
 l'auteur, le hash de la version et le début du message de commit. Ceci nous
 permet de nous synchroniser efficacement.
+
+![CavatOCR, partout, où que je sois.](images/biatch7.jpg)
