@@ -1,7 +1,3 @@
-let image = ref (Image.create_surface 0 0)
-let mat = ref (Matrix.make 0 0 false)
-
-
 let window =
   ignore (GMain.init ());
   let window = GWindow.window
@@ -12,6 +8,10 @@ let window =
     ignore (window#connect#destroy GMain.quit);
     window
 
+(*Test with pointers*)
+let name_of_image = ref ""
+let name_of_text = ref ""
+ 
 (* Where everything happends*)
 let vbox = GPack.vbox
              ~spacing:2
@@ -26,14 +26,84 @@ let toolbar = GButton.toolbar
                 ~packing:(vbox#pack ~expand:false) ()
 
 (*Box of the pic*)
-let view = GPack.vbox ~packing:vbox#add ()
+let view = GBin.scrolled_window
+ ~packing:vbox#add ()
 
 (* {{{ function zone *)
+(*GUIgui*)
+(* Image*)
+let view_image = GMisc.image
+  ~file:!name_of_image
+  ~packing:view#add_with_viewport ()
+
+let open_image my_image () =
+  print_string (my_image#filename);
+  name_of_image := my_image#filename;
+  view_image#set_file !name_of_image
+
+(* Text*)
+let view_text = new Gui_class_text.editor
+  ~packing:scrolled_window_text#add_with_viewport ()
+
+let insert_text (buffer : GText.buffer) =
+   buffer#set_text (!name_of_text)
+
+
+(* Ca marche bien parce que c'est pique
+ *(* Button temporaire *)
+  let button_open = GButton.button () in
+   Gui_button.make_icon
+    "icons/open.png" "Open" button_open#add ();
+   table1#attach
+    ~left:0
+    ~top:0 (button_open#coerce);
+    button_open#connect#clicked ~callback:(display_dialog_box);
+
+    let button_pretreat = GButton.button () in
+    Gui_button.make_icon
+      "icons/pretreatment.png" "Preprocessing" button_pretreat#add ();
+    table1#attach
+      ~left:1
+      ~top:0 (button_pretreat#coerce);
+    (*button_pretreat#connect#clicked ~callback:(actualize view_image);*)
+
+    let button_recogni = GButton.button () in
+      Gui_button.make_icon
+        "icons/recognition.xpm" "Extraction" button_recogni#add ();
+      table1#attach
+        ~left:2
+        ~top:0 (button_recogni#coerce);
+      button_recogni#connect#clicked ~callback:(recognition);
+
+      let button_save = GButton.button () in
+        Gui_button.make_icon
+          "icons/save.png" "Save Text" button_save#add ();
+        table1#attach ~left:3 ~top:0 (button_save#coerce);
+        button_save#connect#clicked ~callback:(view_text#save_as);
+
+      let button_help = GButton.button () in
+      Gui_button.make_icon
+             "icons/help.png" "Help & About" button_help#add ();
+      table1#attach ~left:4 ~top:0 (button_help#coerce);
+      button_help#connect#clicked ~callback:(Gui_help_menu.help_contents);
+
+       let buffer = view_text#text#buffer in
+          insert_text buffer;
+      GtkSpell.attach (*~lang:"fr iso8859-1"*) view_text#text;
+       window#add_accel_group accel_group;
+        window#show ();
+    GMain.main ()
+          
+
+ *
+ *
+ *
+ * *)
+
 (*Check if we can add the pic & add*)
 let may_view btn () =
   match btn#filename with
       Some n ->
-        image := Image.load n;
         ignore (GMisc.image
                   ~file: n
                   ~packing:view#add())
@@ -42,12 +112,21 @@ let may_view btn () =
 (* Function to Test. *)
 let print_test () =
   Printf.printf "Test.\n"
+  (*Trucs bien: GText GFile GAction*)
+(* ce serait bien que la fonction te renvoit une matrice de booléens, que tu garde
+ *dans un coin, pour l'afficher tu peux appeler Image.surface_of_matrix dessus*)
+
+let save (text : GText.view) file =
+  let och = open_out file in
+  output_string och (text#buffer#get_text ());
+  close_out och
+
 
 (* To avoid unfortunate closing*)
 let confirm _ =
   let dlg = GWindow.message_dialog
               ~message:"<b><big>Do you really want to leave ?</big>\n\n\
-                    Warning :\nall unsaved modifications will be lost </b>\n"
+                        Warning :\nall unsaved modifications will be lost </b>\n"
               ~parent:window
               ~destroy_with_parent:true
               ~use_markup:true
@@ -127,84 +206,20 @@ let bbox = GPack.button_box `HORIZONTAL (*Box of bottom interface*)
   ~border_width:2
   ~packing:(vbox#pack ~expand:false) ()
 
-let show img =
-  let display = Image.display_for_matrix img in
-    begin
-      Image.show_matrix img display;
-      Image.wait_key ();
-    end
-
 (** The preprocessing button*)
-let preprocess () =
-  mat := Filters.filter (!image)
-(*
 let preprocessing =
   let button = GButton.button
                  ~label: "Preprocessing"
                  ~packing: bbox#add()
-  in ignore (button#connect#clicked ~callback:(preprocess));
+  in ignore(button#connect#clicked ~callback:(print_test));
      button
- *)
 
 (** The extraction button*)
-let text_window =
-  ignore (GMain.init ());
-  let wnd = GWindow.window ~width:150 ~height:100 () in
-  ignore (wnd#connect#destroy GMain.quit);
-  wnd
-
-let packing =
-  let hbox = GPack.hbox
-    ~spacing:5
-    ~border_width:5
-    ~packing:text_window#add () in
-  hbox#pack ~expand:false
-
-let extr () =
-  let get_filter file = Filters.filter (file) in
-
-  let get_rotate file =
-    let filtered = get_filter file in
-      Rotate.rotate filtered (Rotate.get_skew_angle filtered)
-  in
-  let recognize_char mat =
-    let network = new Network.network in
-      network#from_file "network.bin";
-      network#read_char mat
-
-  in
-
-  let recognize_word word =
-    let rec_array = Array.map recognize_char word in
-    let rec_array = Array.map (Char.escaped) rec_array in
-      Array.fold_left (^) "" rec_array
-  in
-
-  let recognize_line line =
-    let rec_line = Array.map recognize_word line in
-      String.concat " " (Array.to_list rec_line)
-  in
-
-  let recognize_page page =
-    let rec_page = Array.map recognize_line page in
-      String.concat "\n" (Array.to_list rec_page)
-  in
-  let get_extract file =
-    let rotated = get_rotate file in
-    let extracted = Blocks.extract rotated in
-    let expanded = Blocks.expand_full_block extracted in
-      recognize_page expanded
-  in
-    List.iter (fun text -> ignore (GMisc.label ~packing ~text ()))
-      [get_extract (!image)];
-    text_window#show ();
-    GMain.main ()
-
 let extract =
   let button = GButton.button
                  ~label: "Extract"
                  ~packing: bbox#add()
-  in ignore (button#connect#clicked ~callback:(extr));
+  in ignore (button#connect#clicked ~callback:(print_test));
      button
 
 (* The button to quit*)
