@@ -1,5 +1,3 @@
-### Bot irc
-
 Pour nous assister tout au long de cette aventure, nous avons mis en place un
 bot irc, véritable mascotte du groupe. Ce bot est capable de plusieurs
 fonctionnalités :

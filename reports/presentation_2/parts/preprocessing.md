@@ -34,9 +34,9 @@ de chaque pixel.
 Pour opérer le passage en niveau de gris nous multiplions chaque composante de
 ce triplet par des valeurs spécifiques :
 
-- le rouge est multiplié par $0.3$
-- le vert est multiplié par $0.59$
-- le bleu est multiplié par $0.11$
+* le rouge est multiplié par $0.3$
+* le vert est multiplié par $0.59$
+* le bleu est multiplié par $0.11$
 \vspace{0.5cm}
 Ces formules rendent compte de la manière dont l’œil humain perçoit les trois
 composantes, rouge, vert et bleu, de la lumière. Pour chacune d'elles, la somme

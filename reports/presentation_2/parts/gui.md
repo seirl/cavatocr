@@ -1,6 +1,4 @@
-# L'interface graphiq1e
-
-## Bases
+### Bases
 
 L'interface graphique ou GUI, de l'anglais graphical user interface, est la
 partie visible du projet. C'est avec elle qu'interagit l'utilisateur.  Elle
@@ -34,7 +32,7 @@ l'humain se fait donc de la meme maniere qu'entre deux humains, le dialogue est
 facilité et les erreurs possibles sont prise en compte, comme par exemple
 tenter de binariser une image non existante.
 
-## Premier jets
+### Premier jets
 
 ![L'interface finale](images/gui_1.png)
 
@@ -44,7 +42,7 @@ bases de l'interface finale, c'est a dire le bouton pour charger une image, et
 celui pour la traiter. Cependant l'image n'est pas affichée et l'utilisateur
 n'est pas assuré qu'il extrait la bonne.
 
-## Premiere soutenance
+### Premiere soutenance
 
 Lors de la premiere soutenance la partie graphique de l'interface etait presque
 finie, elle ressemblait a cela:
@@ -53,7 +51,7 @@ finie, elle ressemblait a cela:
 
 Cependant toute la partie "active" n'existait pas et restait a créer
 
-## Evolution de l'interface
+### Evolution de l'interface
 
 L'interface a été allégée et le code réorganisé et correctement
 commenté. Le probleme de l'interface etait aussi l'interface entre le choix de
@@ -62,7 +60,7 @@ interne qui seront resolu pour la version finale.
 
 ![L'interface finale](images/gui_3.png)
 
-## L'interface finale
+### L'interface finale
 
 L'interface finale comporte tout dans sa simplification la plus totale, elle est
 composée de la version precedente epurée d'un bouton avec en sortie le texte
