@@ -6,3 +6,7 @@ Usage: ./main.native --gui | --filter | --rotate | --extract | --train
   --train Train the neural network
   -help  Display this list of options
   --help  Display this list of options
+
+To install OCaml dependencies with opam:
+
+    opam install . --deps-only

@@ -6,9 +6,9 @@ SYNTAX := python3 syntax.py
 
 DIRS := . processing image nn training interface
 
+null :=
+space := $(null) #
 comma := ,
-space :=
-space +=
 DEPS := $(subst $(space),$(comma),$(DIRS))
 
 ML := $(wildcard $(foreach dir,$(DIRS),$(addsuffix /*.ml,${dir})))

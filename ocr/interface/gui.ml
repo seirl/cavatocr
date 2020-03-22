@@ -42,8 +42,8 @@ let open_image my_image () =
   view_image#set_file !name_of_image
 
 (* Text*)
-let view_text = new Gui_class_text.editor
-  ~packing:scrolled_window_text#add_with_viewport ()
+(* let view_text = new Gui_class_text.editor *)
+  (* ~packing:scrolled_window_text#add_with_viewport () *)
 
 let insert_text (buffer : GText.buffer) =
    buffer#set_text (!name_of_text)
