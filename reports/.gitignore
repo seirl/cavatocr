@@ -1,0 +1,6 @@
+*/parts/*.tex
+*.aux
+*.log
+*.out
+*.pdf
+*.toc
